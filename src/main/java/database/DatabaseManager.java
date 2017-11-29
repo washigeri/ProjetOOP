@@ -8,22 +8,76 @@ import java.sql.SQLException;
 public class DatabaseManager {
 
     private static String path = "src/main/resources/";
+    private static String fileName = "test.db";
+    private static String url = "jdbc:sqlite:" + path + fileName;
 
-    public static void CreateDatabase(String filename){
-        String url = "jdbc:sqlite:" + path + filename;
-        try{
-            Connection connection  = DriverManager.getConnection(url);
-            if(connection != null){
-                DatabaseMetaData meta = connection.getMetaData();
-                System.out.println(meta.getDriverName());
+    private static DatabaseManager instance = null;
+
+
+    private Connection connection;
+    private boolean isConnected;
+    private DatabaseMetaData metaData;
+
+    private DatabaseManager() {
+        this.ConnectDatabase();
+    }
+
+    public static DatabaseManager getInstance() {
+        return instance;
+    }
+
+    public static void setInstance(DatabaseManager instance) {
+        DatabaseManager.instance = instance;
+    }
+
+    private void ConnectDatabase() {
+        try {
+            setConnection(DriverManager.getConnection(url));
+            if (getConnection() != null) {
+                setMetaData(getConnection().getMetaData());
+                setConnected(true);
             }
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args){
-        CreateDatabase("test.db");
+    public String toString() {
+        String driverName = "";
+        if (isConnected()) {
+
+            try {
+                driverName = this.getMetaData().getDriverName();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return "Database Manager " + driverName;
+    }
+
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
+
+    public DatabaseMetaData getMetaData() {
+        return metaData;
+    }
+
+    public void setMetaData(DatabaseMetaData metaData) {
+        this.metaData = metaData;
     }
 }
