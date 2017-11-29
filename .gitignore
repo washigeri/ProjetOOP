@@ -3,6 +3,7 @@
 
 /.idea/
 /ProjetOOP.iml
+*.db
 /ProjetOOP.eml
 /.classpath
 /.project
