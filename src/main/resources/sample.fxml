@@ -32,16 +32,28 @@
                         </LineChart>
                         <AnchorPane id="AnchorPane_Resume_Hebdo" layoutX="40.0" layoutY="59.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="40.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-                              <Label alignment="CENTER" layoutX="36.0" layoutY="6.0" text="Depense Hebdomadaire" textAlignment="CENTER" />
-                              <Text id="Text_Resume_Hebdo" layoutX="89.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d6e58e" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Label alignment="CENTER" layoutX="4.0" layoutY="1.0" text="Depense Hebdomadaire" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font></Label>
+                              <Text id="Text_Resume_Hebdo" fill="RED" layoutX="44.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10 000" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="38.0" />
+                                 </font></Text>
                            </children>
                         </AnchorPane>
                         <AnchorPane id="AnchorPane_Resume_Mensuel" layoutX="38.0" layoutY="346.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="300.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutY="55.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-                              <Text id="Text_Resume_Mensuel" layoutX="91.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
-                              <Label alignment="CENTER" layoutX="50.0" layoutY="6.0" text="Depense Mensuelle" textAlignment="CENTER" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8df29a" height="110.0" layoutY="55.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Text id="Text_Resume_Mensuel" fill="RED" layoutX="44.0" layoutY="124.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10 000" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="38.0" />
+                                 </font></Text>
+                              <Label alignment="CENTER" layoutX="22.0" layoutY="14.0" text="Depense Mensuelle" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font></Label>
                            </children>
                         </AnchorPane>
                      </children>
@@ -52,30 +64,54 @@
                <content>
                   <AnchorPane id="AnchorPane_Tab_AddTransaction_Main" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button id="Button_AddTransaction_AddTransaction" layoutX="786.0" layoutY="488.0" mnemonicParsing="false" prefHeight="100.0" prefWidth="300.0" text="Ajouter une transaction" AnchorPane.leftAnchor="700.0" AnchorPane.topAnchor="400.0" />
+                        <Button id="Button_AddTransaction_AddTransaction" layoutX="786.0" layoutY="488.0" mnemonicParsing="false" prefHeight="100.0" prefWidth="300.0" text="Ajouter une transaction" textAlignment="CENTER" AnchorPane.leftAnchor="700.0" AnchorPane.topAnchor="400.0">
+                           <font>
+                              <Font size="22.0" />
+                           </font></Button>
                         <AnchorPane id="AnchorPane_Tab_AddTransaction_Montant" layoutX="260.0" layoutY="387.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="40.0">
                            <children>
-                              <Label layoutX="77.0" layoutY="34.0" text="Montant" />
-                              <TextField id="TextField_AddTransaction_Montant" layoutX="25.0" layoutY="70.0" prefHeight="60.0" prefWidth="150.0" />
+                              <Label layoutX="62.0" layoutY="30.0" text="Montant">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font></Label>
+                              <TextField id="TextField_AddTransaction_Montant" layoutX="25.0" layoutY="70.0" prefHeight="60.0" prefWidth="150.0" promptText="0.00">
+                                 <font>
+                                    <Font size="29.0" />
+                                 </font></TextField>
                            </children>
                         </AnchorPane>
                         <AnchorPane id="AnchorPane_Tab_AddTransaction_Categorie" layoutX="260.0" layoutY="362.0" prefHeight="200.0" prefWidth="416.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="180.0">
                            <children>
                               <ChoiceBox id="ChoiceBox_AddTransaction_Categorie" layoutX="25.0" layoutY="81.0" prefWidth="150.0" />
-                              <Label layoutX="74.0" layoutY="39.0" text="Categorie" />
+                              <Label layoutX="57.0" layoutY="38.0" text="Categorie">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font></Label>
                               <Button id="Button_AddTransaction_AddCategorie" layoutX="237.0" layoutY="81.0" mnemonicParsing="false" prefWidth="150.0" text="Ajouter une categorie" />
                            </children>
                         </AnchorPane>
                         <AnchorPane id="AnchorPane_Tab_AddTransaction_Repetition" layoutX="60.0" layoutY="366.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="360.0">
                            <children>
-                              <TextField id="TextField_AddTransaction_Repetition" layoutX="25.0" layoutY="70.0" prefHeight="60.0" prefWidth="150.0" />
-                              <Label layoutX="27.0" layoutY="30.0" text="Repetition (tous les X jours)" />
+                              <TextField id="TextField_AddTransaction_Repetition" layoutX="25.0" layoutY="70.0" prefHeight="60.0" prefWidth="150.0" promptText="0">
+                                 <font>
+                                    <Font size="29.0" />
+                                 </font></TextField>
+                              <Label layoutX="-21.0" layoutY="28.0" text="Repetition (tous les X jours)" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font></Label>
                            </children>
                         </AnchorPane>
                         <AnchorPane id="AnchorPane_Tab_AddTransaction_Description" layoutX="575.0" layoutY="87.0" prefHeight="259.0" prefWidth="691.0" AnchorPane.bottomAnchor="345.0" AnchorPane.leftAnchor="575.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="87.0">
                            <children>
-                              <Label layoutX="315.0" layoutY="24.0" text="Description" />
-                              <TextArea id="TextArea_AddTransaction_Description" layoutY="54.0" prefHeight="205.0" prefWidth="691.0" promptText="Description facultative" />
+                              <Label layoutX="273.0" text="Description">
+                                 <font>
+                                    <Font size="29.0" />
+                                 </font></Label>
+                              <TextArea id="TextArea_AddTransaction_Description" layoutY="54.0" prefHeight="205.0" prefWidth="691.0" promptText="Description facultative">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></TextArea>
                            </children>
                         </AnchorPane>
                      </children>
@@ -101,16 +137,28 @@
                         </LineChart>
                         <AnchorPane id="AnchorPane_Hebdo_Current" layoutX="45.0" layoutY="49.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="40.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-                              <Label alignment="CENTER" layoutX="36.0" layoutY="6.0" text="Depense Hebdomadaire" textAlignment="CENTER" />
-                              <Text id="Text_Hebdo_Current" layoutX="89.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d6e58e" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Label alignment="CENTER" layoutX="4.0" layoutY="1.0" text="Depense Hebdomadaire" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font></Label>
+                              <Text id="Text_Hebdo_Current" fill="RED" layoutX="44.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10 000" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="38.0" />
+                                 </font></Text>
                            </children>
                         </AnchorPane>
                         <AnchorPane id="AnchorPane_Hebdo_Past" layoutX="45.0" layoutY="299.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="300.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-                              <Label alignment="CENTER" layoutX="-11.0" layoutY="6.0" text="Depense Hebdomadaire de la semaine passee" textAlignment="CENTER" />
-                              <Text id="Text_Hebdo_Past" layoutX="89.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d6e58e" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Label alignment="CENTER" layoutX="-58.0" layoutY="1.0" text="Depense Hebdomadaire de la semaine passee" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font></Label>
+                              <Text id="Text_Hebdo_Past" fill="RED" layoutX="44.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10 000" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="38.0" />
+                                 </font></Text>
                            </children>
                         </AnchorPane>
                      </children>
@@ -123,16 +171,28 @@
                      <children>
                         <AnchorPane id="AnchorPane_Mensuel_Current" layoutX="35.0" layoutY="27.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="40.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutX="4.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-                              <Text id="Text_Monthly_Current" layoutX="91.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
-                              <Label alignment="CENTER" layoutX="50.0" layoutY="6.0" text="Depense Mensuelle" textAlignment="CENTER" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8df29a" height="110.0" layoutX="4.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Text id="Text_Monthly_Current" layoutX="46.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10 000" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="38.0" />
+                                 </font></Text>
+                              <Label alignment="CENTER" layoutX="24.0" layoutY="1.0" text="Depense Mensuelle" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font></Label>
                            </children>
                         </AnchorPane>
                         <AnchorPane id="AnchorPane_Mensuel_Past" layoutX="35.0" layoutY="299.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="300.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutX="4.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-                              <Text id="Text_Monthly_Past" layoutX="91.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
-                              <Label alignment="CENTER" layoutX="7.0" layoutY="6.0" text="Depense Mensuelle du mois dernier" textAlignment="CENTER" />
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8df29a" height="110.0" layoutX="4.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Text id="Text_Monthly_Past" layoutX="48.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10 000" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="38.0" />
+                                 </font></Text>
+                              <Label alignment="CENTER" layoutX="-39.0" layoutY="7.0" text="Depense Mensuelle du mois dernier" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font></Label>
                            </children>
                         </AnchorPane>
                         <LineChart id="LineChart_Mensuel" layoutX="348.0" layoutY="27.0" prefHeight="472.0" prefWidth="887.0" title="Cumul des depenses des 7 derniers jours" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0">
@@ -167,7 +227,10 @@
                                     <TitledPane animated="false" layoutX="10.0" layoutY="85.0" prefHeight="12.0" prefWidth="390.0" text="untitled 2" />
                                 </panes>
                               </Accordion>
-                              <Label alignment="CENTER" layoutX="166.0" layoutY="14.0" text="Top 5 Depenses" textAlignment="CENTER" />
+                              <Label alignment="CENTER" layoutX="144.0" layoutY="1.0" text="Top 5 Depenses" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font></Label>
                            </children>
                         </AnchorPane>
                         <AnchorPane id="AnchorPane_Historique_ListeTransactions" layoutX="440.0" layoutY="14.0" prefHeight="674.0" prefWidth="838.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
