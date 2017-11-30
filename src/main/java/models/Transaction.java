@@ -1,12 +1,10 @@
 package models;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
-
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Transaction extends Model {
-    private int id;
     private User user;
     private String description;
     private float amount;
@@ -16,26 +14,19 @@ public class Transaction extends Model {
     private int frequency;
     private Category category;
 
-    public Transaction(int id, User user, String description, float amount,
+    public Transaction(int id, User user, String description, float amount, Date creationDate,
                        Date startDate, Date endDate, int frequency, Category category) {
         this.setId(id);
         this.setUser(user);
         this.setDescription(description);
         this.setAmount(amount);
-        this.setCreationDate(Date.from(Instant.now()));
+        this.setCreationDate(creationDate);
         this.setStartDate(startDate);
         this.setEndDate(endDate);
         this.setFrequency(frequency);
         this.setCategory(category);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    private void setId(int id) {
-        this.id = id;
-    }
 
     public User getUser() {
         return user;
@@ -99,5 +90,20 @@ public class Transaction extends Model {
 
     private void setCategory(Category category) {
         this.category = category;
+    }
+
+    @Override
+    public List<Object> GetFields() {
+        ArrayList<Object> res = new ArrayList<>();
+        res.add(getId());
+        res.add(getUser());
+        res.add(getDescription());
+        res.add(getAmount());
+        res.add(getCreationDate());
+        res.add(getStartDate());
+        res.add(getEndDate());
+        res.add(getFrequency());
+        res.add(getCategory());
+        return res;
     }
 }

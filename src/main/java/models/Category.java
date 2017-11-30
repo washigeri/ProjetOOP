@@ -1,7 +1,9 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Category extends Model {
-    private int id;
     private String name;
 
     public Category(int id, String name) {
@@ -9,13 +11,6 @@ public class Category extends Model {
         this.setName(name);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    private void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -23,5 +18,13 @@ public class Category extends Model {
 
     private void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public List<Object> GetFields() {
+        ArrayList<Object> res = new ArrayList<>();
+        res.add(getId());
+        res.add(getName());
+        return res;
     }
 }
