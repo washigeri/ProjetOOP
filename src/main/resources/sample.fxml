@@ -1,4 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
-<GridPane fx:controller="sample.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-</GridPane>
+
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TabPane layoutX="14.0" layoutY="14.0" prefHeight="720.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab closable="false" text="Resume">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane hbarPolicy="ALWAYS" layoutX="40.0" layoutY="549.0" prefHeight="136.0" prefWidth="1190.0" vbarPolicy="NEVER">
+                           <content>
+                              <AnchorPane />
+                           </content>
+                        </ScrollPane>
+                        <LineChart layoutX="304.0" layoutY="59.0" prefHeight="472.0" prefWidth="887.0" title="Cumul des depenses des 30 derniers jours">
+                          <xAxis>
+                            <CategoryAxis label="Jour" side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis label="Depenses" side="LEFT" upperBound="1000.0" />
+                          </yAxis>
+                        </LineChart>
+                        <AnchorPane layoutX="40.0" layoutY="59.0" prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Label alignment="CENTER" layoutX="36.0" layoutY="6.0" text="Depense Hebdomadaire" textAlignment="CENTER" />
+                              <Text layoutX="89.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="38.0" layoutY="346.0" prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutX="4.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Text layoutX="91.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                              <Label alignment="CENTER" layoutX="50.0" layoutY="6.0" text="Depense Mensuelle" textAlignment="CENTER" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab closable="false" text="Ajouter une transaction">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField layoutX="53.0" layoutY="104.0" prefHeight="60.0" prefWidth="150.0" />
+                        <TextArea layoutX="515.0" layoutY="104.0" prefHeight="205.0" prefWidth="691.0" promptText="Description facultative" />
+                        <ChoiceBox layoutX="53.0" layoutY="209.0" prefWidth="150.0" />
+                        <Button layoutX="53.0" layoutY="362.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Ajouter une transaction" />
+                        <Button layoutX="252.0" layoutY="209.0" mnemonicParsing="false" prefWidth="150.0" text="Ajouter une categorie" />
+                        <TextField layoutX="53.0" layoutY="279.0" prefHeight="60.0" prefWidth="150.0" />
+                        <Label layoutX="105.0" layoutY="74.0" text="Montant" />
+                        <Label layoutX="102.0" layoutY="183.0" text="Categorie" />
+                        <Label layoutX="55.0" layoutY="252.0" text="Repetition (tous les X jours)" />
+                        <Label layoutX="830.0" layoutY="74.0" text="Description" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" text="Hebdo">
+               <content>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane hbarPolicy="ALWAYS" layoutX="45.0" layoutY="527.0" prefHeight="136.0" prefWidth="1190.0" vbarPolicy="NEVER">
+                           <content>
+                              <AnchorPane />
+                           </content>
+                        </ScrollPane>
+                        <LineChart layoutX="348.0" layoutY="27.0" prefHeight="472.0" prefWidth="887.0" title="Cumul des depenses des 7 derniers jours">
+                           <xAxis>
+                              <CategoryAxis label="Jour" side="BOTTOM" />
+                           </xAxis>
+                           <yAxis>
+                              <NumberAxis label="Depenses" side="LEFT" upperBound="1000.0" />
+                           </yAxis>
+                        </LineChart>
+                        <AnchorPane layoutX="45.0" layoutY="49.0" prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Label alignment="CENTER" layoutX="36.0" layoutY="6.0" text="Depense Hebdomadaire" textAlignment="CENTER" />
+                              <Text layoutX="89.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="45.0" layoutY="299.0" prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Label alignment="CENTER" layoutX="-22.0" layoutY="6.0" text="Depense Hebdomadaire de la semaine passee" textAlignment="CENTER" />
+                              <Text layoutX="89.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="Mensuel">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <AnchorPane layoutX="35.0" layoutY="27.0" prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutX="4.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Text layoutX="91.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                              <Label alignment="CENTER" layoutX="50.0" layoutY="6.0" text="Depense Mensuelle" textAlignment="CENTER" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="35.0" layoutY="299.0" prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="110.0" layoutX="4.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                              <Text layoutX="91.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" />
+                              <Label alignment="CENTER" layoutX="50.0" layoutY="6.0" text="Depense Mensuelle" textAlignment="CENTER" />
+                           </children>
+                        </AnchorPane>
+                        <LineChart layoutX="348.0" layoutY="27.0" prefHeight="472.0" prefWidth="887.0" title="Cumul des depenses des 7 derniers jours">
+                           <xAxis>
+                              <CategoryAxis label="Jour" side="BOTTOM" />
+                           </xAxis>
+                           <yAxis>
+                              <NumberAxis label="Depenses" side="LEFT" upperBound="1000.0" />
+                           </yAxis>
+                        </LineChart>
+                        <ScrollPane hbarPolicy="ALWAYS" layoutX="45.0" layoutY="531.0" prefHeight="136.0" prefWidth="1190.0" vbarPolicy="NEVER">
+                           <content>
+                              <AnchorPane />
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+          <Tab text="Historique">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane layoutX="440.0" layoutY="14.0" prefHeight="668.0" prefWidth="833.0">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                          </content>
+                        </ScrollPane>
+                        <Accordion layoutX="34.0" layoutY="71.0" prefHeight="156.0" prefWidth="390.0">
+                          <panes>
+                            <TitledPane animated="false" text="untitled 1" />
+                            <TitledPane animated="false" text="untitled 2" />
+                              <TitledPane animated="false" layoutX="10.0" layoutY="10.0" text="untitled 1" />
+                              <TitledPane animated="false" layoutX="10.0" layoutY="35.0" text="untitled 2" />
+                              <TitledPane animated="false" layoutX="10.0" layoutY="85.0" prefHeight="12.0" prefWidth="390.0" text="untitled 2" />
+                          </panes>
+                        </Accordion>
+                        <Label alignment="CENTER" layoutX="187.0" layoutY="38.0" text="Top 5 Depenses" textAlignment="CENTER" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
