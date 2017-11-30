@@ -95,13 +95,13 @@ public class DatabaseManager implements IDatabaseManager {
     }
 
     @Override
-    public ArrayList<Model> SelectAll(Class object) throws SQLException {
+    public ArrayList<? extends Model> SelectAll(Class object) throws SQLException {
         String sqlQuery = BuildSelectQueryString(object);
         return DoSelect(object, sqlQuery);
     }
 
     @Override
-    public ArrayList<Model> SelectAll(Class object, String condition) throws SQLException {
+    public ArrayList<? extends Model> SelectAll(Class object, String condition) throws SQLException {
         String sqlQuery = BuildSelectQueryString(object);
         sqlQuery += "WHERE ";
         sqlQuery += condition;
@@ -111,7 +111,7 @@ public class DatabaseManager implements IDatabaseManager {
     @Override
     public Model Select(Class object, int id) throws SQLException {
         String condition = String.format("id = %d", id);
-        List<Model> resQuery = SelectAll(object, condition);
+        List<? extends Model> resQuery = SelectAll(object, condition);
         if (resQuery != null && resQuery.size() == 1) {
             return resQuery.get(0);
         } else

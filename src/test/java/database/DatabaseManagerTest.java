@@ -2,10 +2,12 @@ package database;
 
 import models.Category;
 import models.Model;
+import models.Transaction;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,9 +41,10 @@ class DatabaseManagerTest {
     @Test
     void selectAll() {
         DatabaseManager databaseManager = DatabaseManager.getInstance();
-        ArrayList<Model> res = new ArrayList<>();
+        ArrayList<? extends Model> res = new ArrayList<>();
         try {
             res = databaseManager.SelectAll(Category.class);
+            List<Transaction> transactions = (List<Transaction>) databaseManager.SelectAll(Transaction.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }
