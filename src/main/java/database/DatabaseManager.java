@@ -1,9 +1,6 @@
 package database;
 
-import models.Category;
-import models.Model;
-import models.Transaction;
-import models.User;
+import models.*;
 
 import java.sql.*;
 import java.text.DateFormat;
@@ -15,9 +12,9 @@ import java.util.List;
 
 public class DatabaseManager implements IDatabaseManager {
 
-    private static String path = "src/main/resources/";
-    private static String fileName = "test.db";
-    private static String url = "jdbc:sqlite:" + path + fileName;
+    static String path = "src/main/resources/";
+    static String fileName = "test.db";
+    private static String url = null;
 
     private static DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -29,6 +26,8 @@ public class DatabaseManager implements IDatabaseManager {
     private DatabaseMetaData metaData;
 
     private DatabaseManager() {
+        if (url == null)
+            url = "jdbc:sqlite:" + path + fileName;
         this.setConnected(false);
         this.setConnection(null);
         this.setMetaData(null);
@@ -36,7 +35,7 @@ public class DatabaseManager implements IDatabaseManager {
         this.CreateTables();
     }
 
-    static DatabaseManager getInstance() {
+    public static DatabaseManager getInstance() {
         if (instance == null) {
             setInstance(new DatabaseManager());
         }
@@ -45,6 +44,7 @@ public class DatabaseManager implements IDatabaseManager {
 
     private static void setInstance(DatabaseManager instance) {
         DatabaseManager.instance = instance;
+
     }
 
     private void ConnectDatabase() {
@@ -62,7 +62,7 @@ public class DatabaseManager implements IDatabaseManager {
     }
 
     private void CreateTables() {
-        String[] sqlQueries = new String[3];
+        String[] sqlQueries = new String[4];
         sqlQueries[0] = "CREATE TABLE IF NOT EXISTS User(\n" +
                 "id INTEGER PRIMARY KEY,\n" +
                 "username text NOT NULL,\n" +
@@ -83,6 +83,12 @@ public class DatabaseManager implements IDatabaseManager {
                 "id INTEGER PRIMARY KEY,\n" +
                 "name text NOT NULL\n" +
                 ");";
+        sqlQueries[3] = "CREATE TABLE IF NOT EXISTS Spending(\n" +
+                "id INTEGER PRIMARY KEY,\n" +
+                "amount REAL NOT NULL,\n" +
+                "description text,\n" +
+                "date text NOT NULL\n" +
+                ");";
         for (String query :
                 sqlQueries) {
             try {
@@ -95,13 +101,13 @@ public class DatabaseManager implements IDatabaseManager {
     }
 
     @Override
-    public ArrayList<? extends Model> SelectAll(Class object) throws SQLException {
+    public ArrayList<? extends Model> SelectAll(Class<? extends Model> object) throws SQLException {
         String sqlQuery = BuildSelectQueryString(object);
         return DoSelect(object, sqlQuery);
     }
 
     @Override
-    public ArrayList<? extends Model> SelectAll(Class object, String condition) throws SQLException {
+    public ArrayList<? extends Model> SelectAll(Class<? extends Model> object, String condition) throws SQLException {
         String sqlQuery = BuildSelectQueryString(object);
         sqlQuery += "WHERE ";
         sqlQuery += condition;
@@ -109,7 +115,7 @@ public class DatabaseManager implements IDatabaseManager {
     }
 
     @Override
-    public Model Select(Class object, int id) throws SQLException {
+    public Model Select(Class<? extends Model> object, int id) throws SQLException {
         String condition = String.format("id = %d", id);
         List<? extends Model> resQuery = SelectAll(object, condition);
         if (resQuery != null && resQuery.size() == 1) {
@@ -137,6 +143,10 @@ public class DatabaseManager implements IDatabaseManager {
             tableName = "Category";
             parameters = objectToUpdate.GetFields();
             sqlQuery += "name = ?";
+        } else if (objectToUpdate.getClass() == Spending.class) {
+            tableName = "Spending";
+            parameters = objectToUpdate.GetFields();
+            sqlQuery += "amount = ?, description = ?, date = ?";
         } else
             throw new SQLException("Unknown type name: +" + objectToUpdate.getClass().getSimpleName());
         sqlQuery = String.format(sqlQuery, tableName);
@@ -146,7 +156,7 @@ public class DatabaseManager implements IDatabaseManager {
     }
 
     @Override
-    public void Delete(Class object, int id) throws SQLException {
+    public void Delete(Class<? extends Model> object, int id) throws SQLException {
         String tableName = this.MatchTableToClass(object);
         String sqlQuery = String.format("DELETE FROM %s WHERE id = ?", tableName);
         PreparedStatement preparedStatement = this.getConnection().prepareStatement(sqlQuery);
@@ -165,7 +175,9 @@ public class DatabaseManager implements IDatabaseManager {
             sql += "Operation(id, username_id, description, amount, creation_date," +
                     " start_date, end_date, frequency, category_id)" +
                     " VALUES(?,?,?,?,?,?,?,?,?)";
-        } else
+        } else if (objectToInsert.getClass() == Spending.class)
+            sql += "Spending(id, amount, description, date) VALUES(?,?,?,?)";
+        else
             throw new SQLException("This table does not exist.");
         PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
         List<Object> parameters = objectToInsert.GetFields();
@@ -174,7 +186,7 @@ public class DatabaseManager implements IDatabaseManager {
     }
 
     @Override
-    public int GetLastID(Class object) throws SQLException {
+    public int GetLastID(Class<? extends Model> object) throws SQLException {
         ArrayList<Integer> idList = new ArrayList<>();
         String queryString = "SELECT id FROM ";
         queryString += this.MatchTableToClass(object);
@@ -190,13 +202,13 @@ public class DatabaseManager implements IDatabaseManager {
         }
     }
 
-    private String BuildSelectQueryString(Class object) throws SQLException {
+    private String BuildSelectQueryString(Class<? extends Model> object) throws SQLException {
         String sqlQuery = "SELECT * FROM ";
         sqlQuery += this.MatchTableToClass(object);
         return sqlQuery;
     }
 
-    private String MatchTableToClass(Class object) throws SQLException {
+    private String MatchTableToClass(Class<? extends Model> object) throws SQLException {
         String tableName;
         if (object == User.class)
             tableName = "User";
@@ -204,6 +216,8 @@ public class DatabaseManager implements IDatabaseManager {
             tableName = "Operation";
         else if (object == Category.class)
             tableName = "Category";
+        else if (object == Spending.class)
+            tableName = "Spending";
         else
             throw new SQLException("Unknown type name: +" + object.getSimpleName());
         return tableName;
@@ -240,7 +254,7 @@ public class DatabaseManager implements IDatabaseManager {
         }
     }
 
-    private ArrayList<Model> DoSelect(Class object, String sqlQuery) throws SQLException {
+    private ArrayList<? extends Model> DoSelect(Class<? extends Model> object, String sqlQuery) throws SQLException {
         ArrayList<Model> res = new ArrayList<>();
         Statement statement = getConnection().createStatement();
         ResultSet rs = statement.executeQuery(sqlQuery);
@@ -261,8 +275,15 @@ public class DatabaseManager implements IDatabaseManager {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+            } else if (object == Spending.class) {
+                try {
+                    result = new Spending(rs.getInt("id"), rs.getFloat("amount"),
+                            rs.getString("description"), df.parse(rs.getString("date")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             } else
-                throw new SQLException("Result of unknow type in SelectAll");
+                throw new SQLException("Result of unknown type in SelectAll");
             res.add(result);
         }
         return res;

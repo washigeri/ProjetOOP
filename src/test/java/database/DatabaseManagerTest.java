@@ -3,8 +3,14 @@ package database;
 import models.Category;
 import models.Model;
 import models.Transaction;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,25 +18,27 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DatabaseManagerTest {
-    @Test
-    void getLastID() {
-        DatabaseManager databaseManager = DatabaseManager.getInstance();
+    DatabaseManager databaseManager;
+
+    @AfterAll
+    static void destroyDB() {
+
         try {
-            databaseManager.Insert(new Category(1, "test"));
-            databaseManager.Insert(new Category(2, "test2"));
-            assertEquals(databaseManager.GetLastID(Category.class), 3);
-            databaseManager.Delete(Category.class, 1);
-            databaseManager.Delete(Category.class, 2);
-            assertEquals(databaseManager.GetLastID(Category.class), 0);
-        } catch (SQLException e) {
+            Files.delete(Paths.get(DatabaseManager.path + DatabaseManager.fileName));
+        } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    @BeforeEach
+    void setDb() {
+        DatabaseManager.path = "src/test/java/database/";
+        DatabaseManager.fileName = "testdb.db";
+        databaseManager = DatabaseManager.getInstance();
     }
 
     @Test
     void delete() {
-        DatabaseManager databaseManager = DatabaseManager.getInstance();
         try {
             databaseManager.Delete(Category.class, 1);
         } catch (SQLException e) {
@@ -39,8 +47,33 @@ class DatabaseManagerTest {
     }
 
     @Test
+    void getLastID() {
+        try {
+            assertEquals(databaseManager.GetLastID(Category.class), 2);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void insert() {
+        try {
+            databaseManager.Insert(new Category(1, "test"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void connectDatabase() {
+        System.out.println(databaseManager.toString());
+        assertEquals(true, databaseManager.isConnected());
+
+    }
+
+    @Test
     void selectAll() {
-        DatabaseManager databaseManager = DatabaseManager.getInstance();
         ArrayList<? extends Model> res = new ArrayList<>();
         try {
             res = databaseManager.SelectAll(Category.class);
@@ -52,22 +85,8 @@ class DatabaseManagerTest {
         System.out.println(res.get(0));
     }
 
-    @Test
-    void insert() {
-        DatabaseManager databaseManager = DatabaseManager.getInstance();
-        try {
-            databaseManager.Insert(new Category(1, "test"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    @AfterEach
+    void resetManager() {
+        this.databaseManager = null;
     }
-
-    @Test
-    void connectDatabase() {
-        DatabaseManager databaseManager = DatabaseManager.getInstance();
-        System.out.println(databaseManager.toString());
-        assertEquals(true, databaseManager.isConnected());
-
-    }
-
 }
