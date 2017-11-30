@@ -11,6 +11,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DatabaseManagerTest {
     @Test
+    void getLastID() {
+        DatabaseManager databaseManager = DatabaseManager.getInstance();
+        try {
+            databaseManager.Insert(new Category(1, "test"));
+            databaseManager.Insert(new Category(2, "test2"));
+            assertEquals(databaseManager.GetLastID(Category.class), 3);
+            databaseManager.Delete(Category.class, 1);
+            databaseManager.Delete(Category.class, 2);
+            assertEquals(databaseManager.GetLastID(Category.class), 0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
     void delete() {
         DatabaseManager databaseManager = DatabaseManager.getInstance();
         try {
@@ -37,7 +53,7 @@ class DatabaseManagerTest {
     void insert() {
         DatabaseManager databaseManager = DatabaseManager.getInstance();
         try {
-            databaseManager.Insert(new Category(1, "kek"));
+            databaseManager.Insert(new Category(1, "test"));
         } catch (SQLException e) {
             e.printStackTrace();
         }

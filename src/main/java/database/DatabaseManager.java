@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DatabaseManager implements IDatabaseManager {
@@ -146,15 +147,7 @@ public class DatabaseManager implements IDatabaseManager {
 
     @Override
     public void Delete(Class object, int id) throws SQLException {
-        String tableName;
-        if (object == User.class)
-            tableName = "User";
-        else if (object == Transaction.class)
-            tableName = "Operation";
-        else if (object == Category.class)
-            tableName = "Category";
-        else
-            throw new SQLException("Unknown type name: +" + object.getSimpleName());
+        String tableName = this.MatchTableToClass(object);
         String sqlQuery = String.format("DELETE FROM %s WHERE id = ?", tableName);
         PreparedStatement preparedStatement = this.getConnection().prepareStatement(sqlQuery);
         preparedStatement.setInt(1, id);
@@ -180,17 +173,40 @@ public class DatabaseManager implements IDatabaseManager {
         preparedStatement.executeUpdate();
     }
 
+    @Override
+    public int GetLastID(Class object) throws SQLException {
+        ArrayList<Integer> idList = new ArrayList<>();
+        String queryString = "SELECT id FROM ";
+        queryString += this.MatchTableToClass(object);
+        Statement statement = this.getConnection().createStatement();
+        ResultSet rs = statement.executeQuery(queryString);
+        while (rs.next()) {
+            idList.add(rs.getInt("id"));
+        }
+        if (idList.size() == 0)
+            return 0;
+        else {
+            return 1 + Collections.max(idList);
+        }
+    }
+
     private String BuildSelectQueryString(Class object) throws SQLException {
         String sqlQuery = "SELECT * FROM ";
+        sqlQuery += this.MatchTableToClass(object);
+        return sqlQuery;
+    }
+
+    private String MatchTableToClass(Class object) throws SQLException {
+        String tableName;
         if (object == User.class)
-            sqlQuery += "User";
+            tableName = "User";
         else if (object == Transaction.class)
-            sqlQuery += "Operation";
+            tableName = "Operation";
         else if (object == Category.class)
-            sqlQuery += "Category";
+            tableName = "Category";
         else
             throw new SQLException("Unknown type name: +" + object.getSimpleName());
-        return sqlQuery;
+        return tableName;
     }
 
     private void SetParamsInQuery(PreparedStatement preparedStatement, List<Object> parameters) throws SQLException {

@@ -18,4 +18,6 @@ public interface IDatabaseManager {
     void Update(Model objectToUpdate) throws SQLException;
 
     void Delete(Class<Model> object, int id) throws SQLException;
+
+    int GetLastID(Class<Model> object) throws SQLException;
 }
