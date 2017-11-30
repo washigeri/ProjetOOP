@@ -1,13 +1,21 @@
 package models;
 
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class User extends Model {
+    private final static String seed = "seed";
+    private static StandardPBEStringEncryptor stringEncryptor = null;
     private String username;
     private String password;
 
     public User(int id, String username, String password) {
+        if (stringEncryptor == null) {
+            stringEncryptor = new StandardPBEStringEncryptor();
+            stringEncryptor.setPassword(seed);
+        }
         setId(id);
         setPassword(password);
         setUsername(username);
@@ -22,12 +30,12 @@ public class User extends Model {
         this.username = username;
     }
 
-    private String getPassword() {
-        return password;
+    String getPassword() {
+        return stringEncryptor.decrypt(this.password);
     }
 
-    private void setPassword(String password) {
-        this.password = password;
+    void setPassword(String password) {
+        this.password = stringEncryptor.encrypt(password);
     }
 
     @Override

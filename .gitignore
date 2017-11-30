@@ -2,10 +2,10 @@
 
 
 /.idea/
-/ProjetOOP.iml
 *.db
 /ProjetOOP.eml
 /.classpath
 /.project
 /ProjetOOP.userlibraries
 /target/
+*.iml
