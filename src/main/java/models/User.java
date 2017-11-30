@@ -7,6 +7,8 @@ public class User extends Model {
     private String username;
     private String password;
 
+    private String seed;
+
     public User(int id, String username, String password) {
         setId(id);
         setPassword(password);
