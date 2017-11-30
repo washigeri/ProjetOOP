@@ -1,10 +1,15 @@
 package database;
 
+import models.Category;
+import models.Model;
+import models.Transaction;
+import models.User;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import models.*;
-
-public class DatabaseManager {
+public class DatabaseManager implements IDatabaseManager {
 
     private static String path = "src/main/resources/";
     private static String fileName = "test.db";
@@ -74,7 +79,46 @@ public class DatabaseManager {
         }
     }
 
-    public void insert(Class object, Object... parameters) throws SQLException {
+
+
+    @Override
+    public ArrayList<Model> SelectAll(Class object) throws SQLException {
+        ArrayList<Model> res = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM ";
+        if(object == User.class)
+            sqlQuery += "User";
+        else if(object == Transaction.class)
+            sqlQuery += "Operation";
+        else if(object == Category.class)
+            sqlQuery += "Category";
+        else
+            throw new SQLException("Unknow type name: +" + object.getSimpleName());
+        Statement statement = getConnection().createStatement();
+        ResultSet rs = statement.executeQuery(sqlQuery);
+        return null;
+    }
+
+    @Override
+    public List<Model> SelectAll(Class<Model> object, String condition) {
+        return null;
+    }
+
+    @Override
+    public Model Select(Class object, int id) {
+        return null;
+    }
+
+    @Override
+    public void Update(Class object, int id, Object... parameters) {
+
+    }
+
+    @Override
+    public void Delete(Class object, int id) {
+
+    }
+    @Override
+    public void Insert(Class object, Object... parameters) throws SQLException {
         String sql = "INSERT INTO ";
         if (object == User.class)
             sql += "User(id, username, password) VALUES(?,?,?)";

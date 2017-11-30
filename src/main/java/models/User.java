@@ -1,11 +1,11 @@
 package models;
 
-public class User {
+public class User extends Model {
     private int id;
     private String username;
     private String password;
 
-    public User(int id, String username, String password){
+    public User(int id, String username, String password) {
         setId(id);
         setPassword(password);
         setUsername(username);

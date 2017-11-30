@@ -1,9 +1,11 @@
 package models;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
+
 import java.time.Instant;
 import java.util.Date;
 
-public class Transaction {
+public class Transaction extends Model {
     private int id;
     private User user;
     private String description;
