@@ -1,9 +1,6 @@
 package database;
 
-import models.Category;
-import models.Model;
-import models.Transaction;
-import models.User;
+import models.*;
 
 import java.sql.*;
 import java.text.DateFormat;
@@ -17,7 +14,7 @@ public class DatabaseManager implements IDatabaseManager {
 
     static String path = "src/main/resources/";
     static String fileName = "test.db";
-    private static String url = "jdbc:sqlite:" + path + fileName;
+    private static String url = null;
 
     private static DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -29,6 +26,8 @@ public class DatabaseManager implements IDatabaseManager {
     private DatabaseMetaData metaData;
 
     private DatabaseManager() {
+        if (url == null)
+            url = "jdbc:sqlite:" + path + fileName;
         this.setConnected(false);
         this.setConnection(null);
         this.setMetaData(null);
@@ -45,6 +44,7 @@ public class DatabaseManager implements IDatabaseManager {
 
     private static void setInstance(DatabaseManager instance) {
         DatabaseManager.instance = instance;
+
     }
 
     private void ConnectDatabase() {
@@ -62,7 +62,7 @@ public class DatabaseManager implements IDatabaseManager {
     }
 
     private void CreateTables() {
-        String[] sqlQueries = new String[3];
+        String[] sqlQueries = new String[4];
         sqlQueries[0] = "CREATE TABLE IF NOT EXISTS User(\n" +
                 "id INTEGER PRIMARY KEY,\n" +
                 "username text NOT NULL,\n" +
@@ -82,6 +82,12 @@ public class DatabaseManager implements IDatabaseManager {
         sqlQueries[2] = "CREATE TABLE IF NOT EXISTS Category(\n" +
                 "id INTEGER PRIMARY KEY,\n" +
                 "name text NOT NULL\n" +
+                ");";
+        sqlQueries[3] = "CREATE TABLE IF NOT EXISTS Spending(\n" +
+                "id INTEGER PRIMARY KEY,\n" +
+                "amount REAL NOT NULL,\n" +
+                "description text,\n" +
+                "date text NOT NULL\n" +
                 ");";
         for (String query :
                 sqlQueries) {
@@ -137,6 +143,10 @@ public class DatabaseManager implements IDatabaseManager {
             tableName = "Category";
             parameters = objectToUpdate.GetFields();
             sqlQuery += "name = ?";
+        } else if (objectToUpdate.getClass() == Spending.class) {
+            tableName = "Spending";
+            parameters = objectToUpdate.GetFields();
+            sqlQuery += "amount = ?, description = ?, date = ?";
         } else
             throw new SQLException("Unknown type name: +" + objectToUpdate.getClass().getSimpleName());
         sqlQuery = String.format(sqlQuery, tableName);
@@ -165,7 +175,9 @@ public class DatabaseManager implements IDatabaseManager {
             sql += "Operation(id, username_id, description, amount, creation_date," +
                     " start_date, end_date, frequency, category_id)" +
                     " VALUES(?,?,?,?,?,?,?,?,?)";
-        } else
+        } else if (objectToInsert.getClass() == Spending.class)
+            sql += "Spending(id, amount, description, date) VALUES(?,?,?,?)";
+        else
             throw new SQLException("This table does not exist.");
         PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
         List<Object> parameters = objectToInsert.GetFields();
@@ -204,6 +216,8 @@ public class DatabaseManager implements IDatabaseManager {
             tableName = "Operation";
         else if (object == Category.class)
             tableName = "Category";
+        else if (object == Spending.class)
+            tableName = "Spending";
         else
             throw new SQLException("Unknown type name: +" + object.getSimpleName());
         return tableName;
@@ -261,8 +275,15 @@ public class DatabaseManager implements IDatabaseManager {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+            } else if (object == Spending.class) {
+                try {
+                    result = new Spending(rs.getInt("id"), rs.getFloat("amount"),
+                            rs.getString("description"), df.parse(rs.getString("date")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             } else
-                throw new SQLException("Result of unknow type in SelectAll");
+                throw new SQLException("Result of unknown type in SelectAll");
             res.add(result);
         }
         return res;
