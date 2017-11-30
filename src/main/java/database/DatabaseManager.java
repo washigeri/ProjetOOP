@@ -87,8 +87,25 @@ public class DatabaseManager {
         } else
             throw new SQLException("This table does not exist.");
         PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
+        int paramIndex = 1;
         for (Object param: parameters
              ) {
+            if(param instanceof String){
+                preparedStatement.setString(paramIndex, (String) param);
+                paramIndex++;
+            }
+            else if(param instanceof Integer ){
+                preparedStatement.setInt(paramIndex, (Integer) param);
+                paramIndex++;
+            }
+            else if( param instanceof Double){
+                preparedStatement.setDouble(paramIndex, (Double) param);
+                paramIndex++;
+            }
+            else if (param instanceof Float){
+                preparedStatement.setFloat(paramIndex, (Float) param);
+                paramIndex++;
+            }
             
         }
     }
