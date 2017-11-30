@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IDatabaseManager {
 
-    void Insert(Class<Model> object, Object... parameters) throws SQLException;
+    void Insert(Model objectToInsert) throws SQLException;
 
     List<Model> SelectAll(Class<Model> object) throws SQLException;
 
@@ -15,7 +15,7 @@ public interface IDatabaseManager {
 
     Model Select(Class<Model> object, int id) throws SQLException;
 
-    void Update(Class<Model> object, int id, Object... parameters) throws SQLException;
+    void Update(Model objectToUpdate) throws SQLException;
 
     void Delete(Class<Model> object, int id) throws SQLException;
 }

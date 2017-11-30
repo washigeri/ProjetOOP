@@ -1,7 +1,9 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User extends Model {
-    private int id;
     private String username;
     private String password;
 
@@ -11,15 +13,8 @@ public class User extends Model {
         setUsername(username);
     }
 
-    public int getId() {
-        return id;
-    }
 
-    private void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
+    private String getUsername() {
         return username;
     }
 
@@ -27,11 +22,20 @@ public class User extends Model {
         this.username = username;
     }
 
-    public String getPassword() {
+    private String getPassword() {
         return password;
     }
 
     private void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public List<Object> GetFields() {
+        List<Object> res = new ArrayList<>();
+        res.add(getId());
+        res.add(getUsername());
+        res.add(getPassword());
+        return res;
     }
 }

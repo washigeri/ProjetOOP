@@ -6,6 +6,9 @@ import models.Transaction;
 import models.User;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +17,8 @@ public class DatabaseManager implements IDatabaseManager {
     private static String path = "src/main/resources/";
     private static String fileName = "test.db";
     private static String url = "jdbc:sqlite:" + path + fileName;
+
+    private static DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
     private static DatabaseManager instance = null;
 
@@ -30,6 +35,16 @@ public class DatabaseManager implements IDatabaseManager {
         this.CreateTables();
     }
 
+    static DatabaseManager getInstance() {
+        if (instance == null) {
+            setInstance(new DatabaseManager());
+        }
+        return instance;
+    }
+
+    private static void setInstance(DatabaseManager instance) {
+        DatabaseManager.instance = instance;
+    }
 
     private void ConnectDatabase() {
         try {
@@ -44,7 +59,6 @@ public class DatabaseManager implements IDatabaseManager {
             setConnected(false);
         }
     }
-
 
     private void CreateTables() {
         String[] sqlQueries = new String[3];
@@ -79,58 +93,107 @@ public class DatabaseManager implements IDatabaseManager {
         }
     }
 
-
-
     @Override
     public ArrayList<Model> SelectAll(Class object) throws SQLException {
-        ArrayList<Model> res = new ArrayList<>();
-        String sqlQuery = "SELECT * FROM ";
-        if(object == User.class)
-            sqlQuery += "User";
-        else if(object == Transaction.class)
-            sqlQuery += "Operation";
-        else if(object == Category.class)
-            sqlQuery += "Category";
-        else
-            throw new SQLException("Unknow type name: +" + object.getSimpleName());
-        Statement statement = getConnection().createStatement();
-        ResultSet rs = statement.executeQuery(sqlQuery);
-        return null;
+        String sqlQuery = BuildSelectQueryString(object);
+        return DoSelect(object, sqlQuery);
     }
 
     @Override
-    public List<Model> SelectAll(Class<Model> object, String condition) {
-        return null;
+    public ArrayList<Model> SelectAll(Class object, String condition) throws SQLException {
+        String sqlQuery = BuildSelectQueryString(object);
+        sqlQuery += "WHERE ";
+        sqlQuery += condition;
+        return DoSelect(object, sqlQuery);
     }
 
     @Override
-    public Model Select(Class object, int id) {
-        return null;
+    public Model Select(Class object, int id) throws SQLException {
+        String condition = String.format("id = %d", id);
+        List<Model> resQuery = SelectAll(object, condition);
+        if (resQuery != null && resQuery.size() == 1) {
+            return resQuery.get(0);
+        } else
+            throw new SQLException("Error in Select, couldn't find object with id : " + id);
     }
 
     @Override
-    public void Update(Class object, int id, Object... parameters) {
-
+    public void Update(Model objectToUpdate) throws SQLException {
+        String tableName;
+        String sqlQuery = "UPDATE %s SET ";
+        List<Object> parameters;
+        if (objectToUpdate.getClass() == User.class) {
+            tableName = "User";
+            parameters = objectToUpdate.GetFields();
+            sqlQuery += "username = ?, password = ?";
+        } else if (objectToUpdate.getClass() == Transaction.class) {
+            tableName = "Operation";
+            parameters = objectToUpdate.GetFields();
+            sqlQuery += "username_id = ?, description = ?, amount = ?," +
+                    "creation_date = ?, start_date = ?, end_date = ?, " +
+                    "frequency = ?, category_id = ?";
+        } else if (objectToUpdate.getClass() == Category.class) {
+            tableName = "Category";
+            parameters = objectToUpdate.GetFields();
+            sqlQuery += "name = ?";
+        } else
+            throw new SQLException("Unknown type name: +" + objectToUpdate.getClass().getSimpleName());
+        sqlQuery = String.format(sqlQuery, tableName);
+        PreparedStatement preparedStatement = this.getConnection().prepareStatement(sqlQuery);
+        this.SetParamsInQuery(preparedStatement, parameters);
+        preparedStatement.executeUpdate();
     }
 
     @Override
-    public void Delete(Class object, int id) {
-
-    }
-    @Override
-    public void Insert(Class object, Object... parameters) throws SQLException {
-        String sql = "INSERT INTO ";
+    public void Delete(Class object, int id) throws SQLException {
+        String tableName;
         if (object == User.class)
-            sql += "User(id, username, password) VALUES(?,?,?)";
+            tableName = "User";
+        else if (object == Transaction.class)
+            tableName = "Operation";
         else if (object == Category.class)
+            tableName = "Category";
+        else
+            throw new SQLException("Unknown type name: +" + object.getSimpleName());
+        String sqlQuery = String.format("DELETE FROM %s WHERE id = ?", tableName);
+        PreparedStatement preparedStatement = this.getConnection().prepareStatement(sqlQuery);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+    }
+
+    @Override
+    public void Insert(Model objectToInsert) throws SQLException {
+        String sql = "INSERT INTO ";
+        if (objectToInsert.getClass() == User.class)
+            sql += "User(id, username, password) VALUES(?,?,?)";
+        else if (objectToInsert.getClass() == Category.class)
             sql += "Category(id, name) VALUES(?,?)";
-        else if (object == Transaction.class) {
+        else if (objectToInsert.getClass() == Transaction.class) {
             sql += "Operation(id, username_id, description, amount, creation_date," +
                     " start_date, end_date, frequency, category_id)" +
                     " VALUES(?,?,?,?,?,?,?,?,?)";
         } else
             throw new SQLException("This table does not exist.");
         PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
+        List<Object> parameters = objectToInsert.GetFields();
+        this.SetParamsInQuery(preparedStatement, parameters);
+        preparedStatement.executeUpdate();
+    }
+
+    private String BuildSelectQueryString(Class object) throws SQLException {
+        String sqlQuery = "SELECT * FROM ";
+        if (object == User.class)
+            sqlQuery += "User";
+        else if (object == Transaction.class)
+            sqlQuery += "Operation";
+        else if (object == Category.class)
+            sqlQuery += "Category";
+        else
+            throw new SQLException("Unknown type name: +" + object.getSimpleName());
+        return sqlQuery;
+    }
+
+    private void SetParamsInQuery(PreparedStatement preparedStatement, List<Object> parameters) throws SQLException {
         int paramIndex = 1;
         for (Object param : parameters
                 ) {
@@ -152,14 +215,42 @@ public class DatabaseManager implements IDatabaseManager {
             } else if (param instanceof Category) {
                 preparedStatement.setInt(paramIndex, ((Category) param).getId());
                 paramIndex++;
+            } else if (param instanceof Date) {
+                preparedStatement.setString(paramIndex, df.format((Date) param));
+                paramIndex++;
             } else {
                 throw new SQLException("Unknown parameter: " + param.toString());
             }
-
         }
-        preparedStatement.executeUpdate();
     }
 
+    private ArrayList<Model> DoSelect(Class object, String sqlQuery) throws SQLException {
+        ArrayList<Model> res = new ArrayList<>();
+        Statement statement = getConnection().createStatement();
+        ResultSet rs = statement.executeQuery(sqlQuery);
+        while (rs.next()) {
+            Model result = null;
+            if (object == User.class) {
+                result = new User(rs.getInt("id"), rs.getString("username"),
+                        rs.getString("password"));
+            } else if (object == Category.class) {
+                result = new Category(rs.getInt("id"), rs.getString("name"));
+            } else if (object == Transaction.class) {
+
+                try {
+                    result = new Transaction(rs.getInt("id"), (User) this.Select(User.class, rs.getInt("username_id")),
+                            rs.getString("description"), rs.getFloat("amount"), df.parse(rs.getString("creation_date")),
+                            df.parse(rs.getString("start_date")),
+                            df.parse(rs.getString("end_date")), rs.getInt("frequency"), (Category) this.Select(Category.class, rs.getInt("category_id")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            } else
+                throw new SQLException("Result of unknow type in SelectAll");
+            res.add(result);
+        }
+        return res;
+    }
 
     private Connection getConnection() {
         return connection;
@@ -185,17 +276,6 @@ public class DatabaseManager implements IDatabaseManager {
         this.metaData = metaData;
     }
 
-    static DatabaseManager getInstance() {
-        if (instance == null) {
-            setInstance(new DatabaseManager());
-        }
-        return instance;
-    }
-
-    private static void setInstance(DatabaseManager instance) {
-        DatabaseManager.instance = instance;
-    }
-
     public String toString() {
         String driverName = "";
         if (isConnected()) {
@@ -208,5 +288,13 @@ public class DatabaseManager implements IDatabaseManager {
 
         }
         return "Database Manager " + driverName;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        if (this.isConnected()) {
+            this.getConnection().close();
+        }
+        super.finalize();
     }
 }
