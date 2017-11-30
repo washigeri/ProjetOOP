@@ -48,7 +48,7 @@ public class DatabaseManager {
                 "username text NOT NULL,\n" +
                 "password text NOT NULL\n" +
                 ");";
-        sqlQueries[1] = "CREATE TABLE IF NOT EXISTS Transaction(\n" +
+        sqlQueries[1] = "CREATE TABLE IF NOT EXISTS Operation(\n" +
                 "id INTEGER PRIMARY KEY,\n" +
                 "username_id INTEGER NOT NULL,\n" +
                 "description TEXT,\n" +
@@ -81,47 +81,39 @@ public class DatabaseManager {
         else if (object == Category.class)
             sql += "Category(id, name) VALUES(?,?)";
         else if (object == Transaction.class) {
-            sql += "Transaction(id, username_id, description, amount, creation_date," +
+            sql += "Operation(id, username_id, description, amount, creation_date," +
                     " start_date, end_date, frequency, category_id)" +
                     " VALUES(?,?,?,?,?,?,?,?,?)";
         } else
             throw new SQLException("This table does not exist.");
         PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
         int paramIndex = 1;
-        for (Object param: parameters
-             ) {
-            if(param instanceof String){
+        for (Object param : parameters
+                ) {
+            if (param instanceof String) {
                 preparedStatement.setString(paramIndex, (String) param);
                 paramIndex++;
-            }
-            else if(param instanceof Integer ){
+            } else if (param instanceof Integer) {
                 preparedStatement.setInt(paramIndex, (Integer) param);
                 paramIndex++;
-            }
-            else if( param instanceof Double){
+            } else if (param instanceof Double) {
                 preparedStatement.setDouble(paramIndex, (Double) param);
                 paramIndex++;
-            }
-            else if (param instanceof Float){
+            } else if (param instanceof Float) {
                 preparedStatement.setFloat(paramIndex, (Float) param);
                 paramIndex++;
-            }
-            
-        }
-    }
-
-    public String toString() {
-        String driverName = "";
-        if (isConnected()) {
-
-            try {
-                driverName = this.getMetaData().getDriverName();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } else if (param instanceof User) {
+                preparedStatement.setInt(paramIndex, ((User) param).getId());
+                paramIndex++;
+            } else if (param instanceof Category) {
+                preparedStatement.setInt(paramIndex, ((Category) param).getId());
+                paramIndex++;
+            } else {
+                throw new SQLException("Unknown parameter: " + param.toString());
             }
 
         }
-        return "Database Manager " + driverName;
+        preparedStatement.executeUpdate();
     }
 
 
@@ -158,5 +150,19 @@ public class DatabaseManager {
 
     private static void setInstance(DatabaseManager instance) {
         DatabaseManager.instance = instance;
+    }
+
+    public String toString() {
+        String driverName = "";
+        if (isConnected()) {
+
+            try {
+                driverName = this.getMetaData().getDriverName();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return "Database Manager " + driverName;
     }
 }
