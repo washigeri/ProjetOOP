@@ -1,5 +1,6 @@
 package sample;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -13,8 +14,17 @@ public class Controller {
 	
 	public float GetSpendingsOverLastXDays(int numberOfDays)
 	{
-		Date now = new Date();
-		List<Transaction> allTransactions = databaseManager.SelectAll(Transaction.class);
+		try {
+			List<Transaction> allTransactions = (List<Transaction>) databaseManager.SelectAll(Transaction.class);
+			Date now = new Date();
+			Date transactionDate;
+			for(Transaction t : allTransactions) {
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 	
