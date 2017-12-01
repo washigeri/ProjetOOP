@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 public class TransactionController {
     private static DatabaseManager databaseManager = DatabaseManager.getInstance();
 
-    public static List<Category> GetAllCategories() {
+    @SuppressWarnings("unchecked")
+	public static List<Category> GetAllCategories() {
         try {
             return (List<Category>) databaseManager.SelectAll(Category.class);
         } catch (SQLException e) {
