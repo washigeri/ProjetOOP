@@ -7,4 +7,4 @@ Projet OOP
 ---
 
 Le projet est un projet Maven. Il faut lancer le main dans
-src/main/java/sample/Main.java.
+src/main/java/main/Main.java.
