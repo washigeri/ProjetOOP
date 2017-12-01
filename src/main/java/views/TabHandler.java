@@ -6,7 +6,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 import models.Category;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class TabHandler {
 
@@ -23,6 +25,7 @@ public class TabHandler {
                                 break;
                             case "Tab_AddTransaction":
                                 System.out.println("Transaction");
+                                TabHandler.LoadAddTransactionTab();
 
                                 break;
                             case "Tab_Hebdo":
@@ -45,7 +48,35 @@ public class TabHandler {
 
 
     private static void LoadAddTransactionTab() {
+        viewHandler.ChoiceBox_AddTransaction_Categorie.getItems().clear();
         ArrayList<Category> categories = (ArrayList<Category>) TransactionController.GetAllCategories();
+        for (Category category :
+                categories) {
+            viewHandler.ChoiceBox_AddTransaction_Categorie.getItems().add(
+                    new IntStringPair(category.getId(), category.getName()));
+        }
+        viewHandler.ChoiceBox_AddTransaction_Categorie.getSelectionModel().selectFirst();
+        viewHandler.DatePicker_AddTransaction_Start.setValue(new Date()
+                .toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+    }
+}
 
+class IntStringPair {
+    private final Integer key;
+    private final String value;
+
+    public IntStringPair(Integer key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public int getKey() {
+        return key;
+    }
+
+    @Override
+    public String toString() {
+        return value;
     }
 }

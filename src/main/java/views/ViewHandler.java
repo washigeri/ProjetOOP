@@ -5,8 +5,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
-import java.util.Map;
-
 public class ViewHandler {
 
 
@@ -24,7 +22,7 @@ public class ViewHandler {
     public Button Button_AddTransaction_AddCategorie;
 
     @FXML
-    public ChoiceBox<Map.Entry<Integer, String>> ChoiceBox_AddTransaction_Categorie;
+    public ChoiceBox<IntStringPair> ChoiceBox_AddTransaction_Categorie;
 
     @FXML
     public DatePicker DatePicker_AddTransaction_Start;
