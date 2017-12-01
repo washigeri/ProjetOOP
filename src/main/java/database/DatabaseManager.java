@@ -81,42 +81,66 @@ public class DatabaseManager implements IDatabaseManager {
                 ");";
         sqlQueries[2] = "CREATE TABLE IF NOT EXISTS Category(\n" +
                 "id INTEGER PRIMARY KEY,\n" +
-                "name text NOT NULL\n" +
+                "name text UNIQUE NOT NULL\n" +
                 ");";
         sqlQueries[3] = "CREATE TABLE IF NOT EXISTS Spending(\n" +
                 "id INTEGER PRIMARY KEY,\n" +
                 "amount REAL NOT NULL,\n" +
                 "description text,\n" +
-                "date text NOT NULL\n" +
+                "date text NOT NULL\n," +
+                "category_id NOT NULL\n," +
+                "operation_id NOT NULL" +
                 ");";
+        try {
+            this.ExecuteCreateDropQueries(sqlQueries);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void DropTables() {
+        String[] sqlQueries = new String[4];
+        sqlQueries[0] = "DROP TABLE IF EXISTS User";
+        sqlQueries[1] = "DROP TABLE IF EXISTS Category";
+        sqlQueries[2] = "DROP TABLE IF EXISTS Operation";
+        sqlQueries[3] = "DROP TABLE IF EXISTS Spending";
+        try {
+            this.ExecuteCreateDropQueries(sqlQueries);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void ExecuteCreateDropQueries(String[] sqlQueries) throws SQLException {
         for (String query :
                 sqlQueries) {
-            try {
-                Statement statement = getConnection().createStatement();
-                statement.execute(query);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+            Statement statement = getConnection().createStatement();
+            statement.execute(query);
+
         }
     }
 
     @Override
     public ArrayList<? extends Model> SelectAll(Class<? extends Model> object) throws SQLException {
         String sqlQuery = BuildSelectQueryString(object);
+        sqlQuery += ";";
         return DoSelect(object, sqlQuery);
     }
 
     @Override
     public ArrayList<? extends Model> SelectAll(Class<? extends Model> object, String condition) throws SQLException {
         String sqlQuery = BuildSelectQueryString(object);
-        sqlQuery += "WHERE ";
+        sqlQuery += " WHERE ";
         sqlQuery += condition;
+        sqlQuery += ";";
         return DoSelect(object, sqlQuery);
     }
 
     @Override
     public Model Select(Class<? extends Model> object, int id) throws SQLException {
-        String condition = String.format("id = %d", id);
+        String condition = String.format("id == %d", id);
         List<? extends Model> resQuery = SelectAll(object, condition);
         if (resQuery != null && resQuery.size() == 1) {
             return resQuery.get(0);
@@ -146,7 +170,7 @@ public class DatabaseManager implements IDatabaseManager {
         } else if (objectToUpdate.getClass() == Spending.class) {
             tableName = "Spending";
             parameters = objectToUpdate.GetFields();
-            sqlQuery += "amount = ?, description = ?, date = ?";
+            sqlQuery += "amount = ?, description = ?, date = ?, category_id = ?, operation_id = ?";
         } else
             throw new SQLException("Unknown type name: +" + objectToUpdate.getClass().getSimpleName());
         sqlQuery = String.format(sqlQuery, tableName);
@@ -176,7 +200,7 @@ public class DatabaseManager implements IDatabaseManager {
                     " start_date, end_date, frequency, category_id)" +
                     " VALUES(?,?,?,?,?,?,?,?,?)";
         } else if (objectToInsert.getClass() == Spending.class)
-            sql += "Spending(id, amount, description, date) VALUES(?,?,?,?)";
+            sql += "Spending(id, amount, description, date, category_id, operation_id) VALUES(?,?,?,?,?,?)";
         else
             throw new SQLException("This table does not exist.");
         PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
@@ -245,8 +269,11 @@ public class DatabaseManager implements IDatabaseManager {
             } else if (param instanceof Category) {
                 preparedStatement.setInt(paramIndex, ((Category) param).getId());
                 paramIndex++;
-            } else if (param instanceof Date) {
-                preparedStatement.setString(paramIndex, df.format((Date) param));
+            } else if (param instanceof Transaction) {
+                preparedStatement.setInt(paramIndex, ((Transaction) param).getId());
+                paramIndex++;
+            } else if (param instanceof java.util.Date) {
+                preparedStatement.setString(paramIndex, df.format((java.util.Date) param));
                 paramIndex++;
             } else {
                 throw new SQLException("Unknown parameter: " + param.toString());
@@ -278,7 +305,9 @@ public class DatabaseManager implements IDatabaseManager {
             } else if (object == Spending.class) {
                 try {
                     result = new Spending(rs.getInt("id"), rs.getFloat("amount"),
-                            rs.getString("description"), df.parse(rs.getString("date")));
+                            rs.getString("description"), df.parse(rs.getString("date")),
+                            (Category) this.Select(Category.class, rs.getInt("category_id")),
+                            (Transaction) this.Select(Transaction.class, rs.getInt("operation_id")));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
