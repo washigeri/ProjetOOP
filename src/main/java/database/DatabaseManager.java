@@ -89,14 +89,34 @@ public class DatabaseManager implements IDatabaseManager {
                 "description text,\n" +
                 "date text NOT NULL\n" +
                 ");";
+        try {
+            this.ExecuteCreateDropQueries(sqlQueries);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void DropTables() {
+        String[] sqlQueries = new String[4];
+        sqlQueries[0] = "DROP TABLE IF EXISTS User";
+        sqlQueries[1] = "DROP TABLE IF EXISTS Category";
+        sqlQueries[2] = "DROP TABLE IF EXISTS Operation";
+        sqlQueries[3] = "DROP TABLE IF EXISTS Spending";
+        try {
+            this.ExecuteCreateDropQueries(sqlQueries);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void ExecuteCreateDropQueries(String[] sqlQueries) throws SQLException {
         for (String query :
                 sqlQueries) {
-            try {
-                Statement statement = getConnection().createStatement();
-                statement.execute(query);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+            Statement statement = getConnection().createStatement();
+            statement.execute(query);
+
         }
     }
 
@@ -245,8 +265,8 @@ public class DatabaseManager implements IDatabaseManager {
             } else if (param instanceof Category) {
                 preparedStatement.setInt(paramIndex, ((Category) param).getId());
                 paramIndex++;
-            } else if (param instanceof Date) {
-                preparedStatement.setString(paramIndex, df.format((Date) param));
+            } else if (param instanceof java.util.Date) {
+                preparedStatement.setString(paramIndex, df.format((java.util.Date) param));
                 paramIndex++;
             } else {
                 throw new SQLException("Unknown parameter: " + param.toString());
