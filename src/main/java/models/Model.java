@@ -14,4 +14,14 @@ public abstract class Model {
     }
 
     public abstract List<Object> GetFields();
+
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder();
+        for (Object field :
+                this.GetFields()) {
+            res.append(field.toString()).append(" -- ");
+        }
+        return res.toString();
+    }
 }
