@@ -1,5 +1,6 @@
 package main;
 
+import database.DatabaseManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,6 +17,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        DatabaseManager.getInstance();
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("../sample.fxml").openStream());
         ViewHandler viewHandler = (ViewHandler) fxmlLoader.getController();
