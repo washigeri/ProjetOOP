@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import views.TabHandler;
+import views.ViewHandler;
 
 public class Main extends Application {
 
@@ -14,7 +16,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("../sample.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        Parent root = fxmlLoader.load(getClass().getResource("../sample.fxml").openStream());
+        ViewHandler viewHandler = (ViewHandler) fxmlLoader.getController();
+        TabHandler.viewHandler = viewHandler;
+        TabHandler.TabChangeHandler();
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 1280, 720));
         primaryStage.show();
