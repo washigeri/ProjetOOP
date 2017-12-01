@@ -19,15 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DatabaseManagerTest {
     DatabaseManager databaseManager;
 
-
-
-    @BeforeEach
-    void setDb() {
-        DatabaseManager.path = "src/test/java/database/";
-        DatabaseManager.fileName = "testdb.db";
-        databaseManager = DatabaseManager.getInstance();
-    }
-
     @AfterAll
     static void destroyDBFile() {
         try {
@@ -35,6 +26,13 @@ class DatabaseManagerTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @BeforeEach
+    void setDb() {
+        DatabaseManager.path = "src/test/java/database/";
+        DatabaseManager.fileName = "testdb.db";
+        databaseManager = DatabaseManager.getInstance();
     }
 
     @Test

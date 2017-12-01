@@ -88,7 +88,8 @@ public class DatabaseManager implements IDatabaseManager {
                 "amount REAL NOT NULL,\n" +
                 "description text,\n" +
                 "date text NOT NULL\n," +
-                "category_id NOT NULL\n" +
+                "category_id NOT NULL\n," +
+                "operation_id NOT NULL" +
                 ");";
         try {
             this.ExecuteCreateDropQueries(sqlQueries);
@@ -167,7 +168,7 @@ public class DatabaseManager implements IDatabaseManager {
         } else if (objectToUpdate.getClass() == Spending.class) {
             tableName = "Spending";
             parameters = objectToUpdate.GetFields();
-            sqlQuery += "amount = ?, description = ?, date = ?, category_id = ?";
+            sqlQuery += "amount = ?, description = ?, date = ?, category_id = ?, operation_id = ?";
         } else
             throw new SQLException("Unknown type name: +" + objectToUpdate.getClass().getSimpleName());
         sqlQuery = String.format(sqlQuery, tableName);
@@ -197,7 +198,7 @@ public class DatabaseManager implements IDatabaseManager {
                     " start_date, end_date, frequency, category_id)" +
                     " VALUES(?,?,?,?,?,?,?,?,?)";
         } else if (objectToInsert.getClass() == Spending.class)
-            sql += "Spending(id, amount, description, date, category_id) VALUES(?,?,?,?,?)";
+            sql += "Spending(id, amount, description, date, category_id, operation_id) VALUES(?,?,?,?,?,?)";
         else
             throw new SQLException("This table does not exist.");
         PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
@@ -266,6 +267,9 @@ public class DatabaseManager implements IDatabaseManager {
             } else if (param instanceof Category) {
                 preparedStatement.setInt(paramIndex, ((Category) param).getId());
                 paramIndex++;
+            } else if (param instanceof Transaction) {
+                preparedStatement.setInt(paramIndex, ((Transaction) param).getId());
+                paramIndex++;
             } else if (param instanceof java.util.Date) {
                 preparedStatement.setString(paramIndex, df.format((java.util.Date) param));
                 paramIndex++;
@@ -300,7 +304,8 @@ public class DatabaseManager implements IDatabaseManager {
                 try {
                     result = new Spending(rs.getInt("id"), rs.getFloat("amount"),
                             rs.getString("description"), df.parse(rs.getString("date")),
-                            (Category) this.Select(Category.class, rs.getInt("category_id")));
+                            (Category) this.Select(Category.class, rs.getInt("category_id")),
+                            (Transaction) this.Select(Transaction.class, rs.getInt("operation_id")));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

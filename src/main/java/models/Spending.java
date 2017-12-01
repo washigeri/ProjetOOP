@@ -10,13 +10,15 @@ public class Spending extends Model {
     private String description;
     private Date date;
     private Category category;
+    private Transaction transaction;
 
-    public Spending(int id, float amount, String description, Date date, Category category) {
+    public Spending(int id, float amount, String description, Date date, Category category, Transaction transaction) {
         this.setId(id);
         this.setAmount(amount);
         this.setDescription(description);
         this.setDate(date);
         this.setCategory(category);
+        this.setTransaction(transaction);
     }
 
     @Override
@@ -27,6 +29,7 @@ public class Spending extends Model {
         res.add(this.getDescription());
         res.add(this.getDate());
         res.add(this.getCategory());
+        res.add(this.getTransaction());
         return res;
 
     }
@@ -61,5 +64,13 @@ public class Spending extends Model {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 }
