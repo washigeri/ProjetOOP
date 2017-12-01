@@ -126,11 +126,21 @@ public class TransactionController {
                 } else
                     break;
             }
-            return res;
+
+            return res.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                    .collect(Collectors
+                            .toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         } catch (SQLException e) {
             e.printStackTrace();
             return new HashMap<>(5);
         }
+    }
+
+    public static void main(String[] args) {
+
+        Map<String, Float> res = TransactionController.Get5BiggestSpendingByCategory();
+        System.out.println(res);
     }
 
 }
