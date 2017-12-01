@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8"
-            fx:controller="views.AddTransactionHandler">
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="720.0" prefWidth="1280.0"
+            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="views.ViewHandler">
     <content>
         <AnchorPane id="AnchorPane_Main" fx:id="AnchorPane_Main">
             <children>
-                <TabPane id="TabPane_Main" layoutX="14.0" layoutY="14.0" prefHeight="720.0" prefWidth="1280.0"
-                         tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <TabPane id="TabPane_Main" fx:id="tabPane" layoutX="14.0" layoutY="14.0" prefHeight="720.0"
+                         prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
+                         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
                         <Tab id="Tab_Resume" closable="false" text="Resume">
                             <content>
@@ -186,11 +186,11 @@
                                             <children>
                                                 <DatePicker id="DatePicker_AddTransaction_Start"
                                                             fx:id="DatePicker_AddTransaction_Start" layoutX="13.0"
-                                                            layoutY="41.0"/>
+                                                            layoutY="41.0" onAction="#handleStartDateSelection"/>
                                                 <Label layoutX="62.0" layoutY="24.0" text="Date de début"/>
                                                 <DatePicker id="DatePicker_AddTransaction_End"
                                                             fx:id="DatePicker_AddTransaction_End" layoutX="13.0"
-                                                            layoutY="100.0"/>
+                                                            layoutY="100.0" onAction="#handleEndDateSelection"/>
                                                 <Label layoutX="71.0" layoutY="83.0" text="Date de fin"/>
                                                 <ChoiceBox id="ChoiceBox_AddTransaction_Repetition"
                                                            fx:id="ChoiceBox_AddTransaction_Repetition" disable="true"
