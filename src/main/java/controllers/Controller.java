@@ -1,17 +1,16 @@
-package sample;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+package controllers;
 
 import database.DatabaseManager;
 import database.IDatabaseManager;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import models.*;
+import models.Spending;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class Controller {
 
@@ -168,10 +167,10 @@ public class Controller {
 		NumberAxis xAxis = new NumberAxis(1, numberOfDays + 1, 1);
 		NumberAxis yAxis = new NumberAxis();
 		xAxis.setLabel("Nombre de jours");
-		yAxis.setLabel("Dépenses");
-		LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-		lineChart.setTitle("Evolution des dépenses au cours des " + numberOfDays + "derniers jours");
-		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+        yAxis.setLabel("DÃ©penses");
+        LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+        lineChart.setTitle("Evolution des dÃ©penses au cours des " + numberOfDays + "derniers jours");
+        XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		float totalSpendings = 0f;
 		for (int i = 0; i < numberOfDays; i++) {
 			totalSpendings += spendingsPerDay[i];
@@ -255,10 +254,10 @@ public class Controller {
 		NumberAxis xAxis = new NumberAxis(1, numberOfMonths + 1, 1);
 		NumberAxis yAxis = new NumberAxis();
 		xAxis.setLabel("Nombre de mois");
-		yAxis.setLabel("Dépenses");
-		LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-		lineChart.setTitle("Evolution des dépenses au cours des " + numberOfMonths + "derniers mois");
-		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+        yAxis.setLabel("DÃ©penses");
+        LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+        lineChart.setTitle("Evolution des dÃ©penses au cours des " + numberOfMonths + "derniers mois");
+        XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		float totalSpendings = 0f;
 		for (int i = 0; i < numberOfMonths; i++) {
 			totalSpendings += spendingsPerMonths[i];

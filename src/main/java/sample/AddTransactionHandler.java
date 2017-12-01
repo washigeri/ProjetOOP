@@ -3,7 +3,7 @@ package sample;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-public class AddTransactionController {
+public class AddTransactionHandler {
 
 
     @FXML
