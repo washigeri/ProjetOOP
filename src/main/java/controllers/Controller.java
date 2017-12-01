@@ -172,7 +172,7 @@ public class Controller {
 	}
 
 	public LineChart<Number, Number> ShowGraphOfSpendingsOverTheLastDays(int numberOfDays) {
-		float[] spendingsPerDay = new float[numberOfDays];
+		float[] spendingsPerDay = new float[numberOfDays + 1];
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 0);
@@ -180,11 +180,14 @@ public class Controller {
 		c.set(Calendar.MILLISECOND, 0);
 		long today = c.getTimeInMillis();
 		List<Spending> allSpendings = GetSpendingsOverTheLastDays(numberOfDays);
+		System.out.println(allSpendings.size());
 		for (Spending spending : allSpendings) {
+			System.out.println(spending.getDate() + " = spending");
 			int day = (int) Math.abs((today - spending.getDate().getTime()) / MILLISINADAY);
-			spendingsPerDay[numberOfDays - 1 - day] += spending.getAmount();
+			System.out.println("days = " + day);
+			spendingsPerDay[numberOfDays - day] += spending.getAmount();
 		}
-		NumberAxis xAxis = new NumberAxis(1, numberOfDays + 1, 1);
+		NumberAxis xAxis = new NumberAxis(0, numberOfDays + 2, 1);
 		NumberAxis yAxis = new NumberAxis();
 		xAxis.setLabel("Nombre de jours");
 		yAxis.setLabel("DÃ©penses");
@@ -192,50 +195,100 @@ public class Controller {
 		lineChart.setTitle("Evolution des dÃ©penses au cours des " + numberOfDays + "derniers jours");
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		float totalSpendings = 0f;
-		for (int i = 0; i < numberOfDays; i++) {
+		for (int i = 0; i <= numberOfDays; i++) {
 			totalSpendings += spendingsPerDay[i];
-			series.getData().add(new XYChart.Data<Number, Number>(i, totalSpendings));
+			series.getData().add(new XYChart.Data<Number, Number>(i + 1, totalSpendings));
 		}
 		lineChart.getData().add(series);
 		return lineChart;
 	}
 
-	// private List<Spending> GetSpendingsByMonthAndDateFromList(List<Spending>
-	// spendings, int month, int year) {
-	// List<Spending> matchingSpendings = new ArrayList<Spending>();
-	// Calendar c = Calendar.getInstance();
-	// int i = 0;
-	// for (Spending spending : spendings) {
-	// c.setTime(spending.getDate());
-	// if (c.get(Calendar.YEAR) == year && c.get(Calendar.MONTH) == month) {
-	// matchingSpendings.add(spending);
-	// spendings.remove(i);
-	// } else {
-	// i++;
-	// }
-	// }
-	// return matchingSpendings;
-	// }
-	//
-	// private int GetFirstMonthSuperiorToMin(List<Spending> spendings, int year,
-	// int min) {
-	// Calendar c = Calendar.getInstance();
-	// int res = 12;
-	// if (spendings != null && !spendings.isEmpty()) {
-	// for (Spending spending : spendings) {
-	// c.setTime(spending.getDate());
-	// if (c.get(Calendar.YEAR) == year) {
-	// if (c.get(Calendar.MONTH) < res && c.get(Calendar.MONTH) >= min) {
-	// res = c.get(Calendar.MONTH);
-	// }
-	// } else if (c.get(Calendar.YEAR) > year) {
-	//
-	// }
-	// }
-	// }
-	// return res;
-	// }
-
+	private Date GetFirstDateSuperiorToYearAndWeek(List<Spending> spendings, int year, int week) {
+		Date res = null;
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.YEAR, year);
+		c.set(Calendar.WEEK_OF_YEAR, week);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		System.out.println(c.getTime() + "   mdr");
+		Date min = c.getTime();
+		for (Spending spending : spendings) {
+			if (res == null) {
+				if (spending.getDate().compareTo(min) >= 0) {
+					res = spending.getDate();
+				}
+			}
+			else {
+				if (spending.getDate().compareTo(min) > 0 && spending.getDate().compareTo(res) < 0) {
+					res = spending.getDate();
+				}
+			}
+		}
+		return res;
+	}
+	
+	public LineChart<Number,Number> ShowGraphOfSpendingsOverTheLastWeeks(int numberOfWeeks){
+		float[] spendingsPerWeeks = new float[numberOfWeeks + 1];
+		Calendar today = Calendar.getInstance();
+		today.set(Calendar.HOUR_OF_DAY, 0);
+		today.set(Calendar.MINUTE, 0);
+		today.set(Calendar.SECOND, 0);
+		today.set(Calendar.MILLISECOND, 0);
+		List<Spending> allSpendings = GetSpendingsOverTheLastWeeks(numberOfWeeks);
+		System.out.println("all spendings = " + allSpendings);
+		int minYear = today.get(Calendar.YEAR);
+		int isSameYear = today.get(Calendar.WEEK_OF_YEAR) - numberOfWeeks;
+		//int numberOfWeeksLeft = numberOfWeeks;
+		while(isSameYear < 0) {
+			minYear--;
+			isSameYear += (52 + hasExtraWeek(minYear)); 
+		}
+//		int weeksInYear = 52 + hasExtraWeek(minYear);
+		Calendar spendingDate = Calendar.getInstance();
+		System.out.println("is same year= " + isSameYear);
+		Date firstDate = GetFirstDateSuperiorToYearAndWeek(allSpendings, minYear, isSameYear);
+		if (firstDate == null) {
+			System.out.println("first date null");
+			return null;
+		} else {
+			Calendar minDate = Calendar.getInstance();
+			minDate.setTime(firstDate);
+			int firstWeek = minDate.get(Calendar.WEEK_OF_YEAR);
+			int spendingsSize = allSpendings.size();
+			Spending spending;
+			int weeksCount = -firstWeek;
+			for (int i = minYear; i <= today.get(Calendar.YEAR); i++) {
+				for (int j = 0; j < spendingsSize; j++) {
+					spending = allSpendings.get(j);
+					spendingDate.setTime(spending.getDate());
+					if (spendingDate.get(Calendar.YEAR) == i) {
+						spendingsPerWeeks[weeksCount + spendingDate.get(Calendar.WEEK_OF_YEAR)] += spending.getAmount();
+						allSpendings.remove(j);
+						j--;
+						spendingsSize--;
+					}
+				}
+				weeksCount += (52 + hasExtraWeek(i));
+			}
+			NumberAxis xAxis = new NumberAxis(0, numberOfWeeks + 2, 1);
+			NumberAxis yAxis = new NumberAxis();
+			xAxis.setLabel("Nombre de semaines");
+			yAxis.setLabel("Dépenses");
+			LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+			lineChart.setTitle("Evolution des dépenses au cours des " + numberOfWeeks + " derniere(s) semaines(s)");
+			XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+			float totalSpendings = 0f;
+			for (int i = 0; i <= numberOfWeeks; i++) {
+				totalSpendings += spendingsPerWeeks[i];
+				series.getData().add(new XYChart.Data<Number, Number>(i + 1, totalSpendings));
+			}
+			lineChart.getData().add(series);
+			return lineChart;
+		}
+	}
+	
 	private Date GetFirstMonthAndYearSuperiorToDate(List<Spending> spendings, int month, int year) {
 		Date res = null;
 		Calendar c = Calendar.getInstance();
@@ -266,7 +319,7 @@ public class Controller {
 		int minYear = today.get(Calendar.YEAR);
 		int isSameYear = today.get(Calendar.MONTH) - numberOfMonths;
 		if (isSameYear < 0) {
-			minYear -= Math.ceil((numberOfMonths - today.get(Calendar.MONTH)) / 12.0);
+			minYear -= Math.ceil((today.get(Calendar.MONTH) - numberOfMonths) / 12.0);
 		}
 		int minMonth = (today.get(Calendar.MONTH) - numberOfMonths) % 12;
 		while (minMonth < 0) {
@@ -279,7 +332,6 @@ public class Controller {
 		} else {
 			Calendar minDate = Calendar.getInstance();
 			minDate.setTime(firstDate);
-			int firstMonth = minDate.get(Calendar.MONTH);
 			int spendingsSize = allSpendings.size();
 			Spending spending;
 			for (int i = minYear; i <= today.get(Calendar.YEAR); i++) {
@@ -287,8 +339,13 @@ public class Controller {
 					spending = allSpendings.get(j);
 					spendingDate.setTime(spending.getDate());
 					if (spendingDate.get(Calendar.YEAR) == i) {
-						spendingsPerMonths[12 * (i - minYear) + spendingDate.get(Calendar.MONTH)
-								- firstMonth] += spending.getAmount();
+						if(i == minYear) {
+							spendingsPerMonths[spendingDate.get(Calendar.MONTH) - minMonth] += spending.getAmount();
+						}
+						else {
+							System.out.println(i + " = i");
+							spendingsPerMonths[12 * (i - minYear - 1) + spendingDate.get(Calendar.MONTH) + minMonth] += spending.getAmount();
+						}
 						allSpendings.remove(j);
 						j--;
 						spendingsSize--;
@@ -305,6 +362,7 @@ public class Controller {
 			float totalSpendings = 0f;
 			for (int i = 0; i <= numberOfMonths; i++) {
 				totalSpendings += spendingsPerMonths[i];
+				System.out.println("spendingpermonth[" + i +"] = " + spendingsPerMonths[i]);
 				series.getData().add(new XYChart.Data<Number, Number>(i + 1, totalSpendings));
 			}
 			lineChart.getData().add(series);
@@ -330,7 +388,7 @@ public class Controller {
 			for (Spending spending : allSpendings) {
 				cal.setTime(spending.getDate());
 				if(cal.get(Calendar.YEAR) >= currentYear - numberOfYears) {
-					spendingsPerYears[cal.get(Calendar.YEAR) - firstYear] += spending.getAmount();
+					spendingsPerYears[cal.get(Calendar.YEAR) - (currentYear - numberOfYears)] += spending.getAmount();
 				}
 			}
 			NumberAxis xAxis = new NumberAxis(0, numberOfYears + 2, 1);
@@ -352,7 +410,7 @@ public class Controller {
 
 	public static void main(String[] args) {
 		Controller controller = new Controller();
-		System.out.println(controller.GetSpendingsOverTheLastYears(1).size());
+		System.out.println(controller.GetSpendingsOverTheLastDays(0).size());
 	}
 
 }
