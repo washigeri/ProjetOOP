@@ -20,7 +20,9 @@ public abstract class Model {
         StringBuilder res = new StringBuilder();
         for (Object field :
                 this.GetFields()) {
-            res.append(field.toString()).append(" -- ");
+        	if(field != null) {
+                res.append(field.toString()).append(" -- ");
+        	}
         }
         return res.toString();
     }
