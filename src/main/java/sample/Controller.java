@@ -197,14 +197,14 @@ public class Controller {
 		return matchingSpendings;
 	}
 
-	private int GetFirstMonth(List<Spending> spendings, int year) {
+	private int GetFirstMonthSuperiorToMin(List<Spending> spendings, int year, int min) {
 		Calendar c = Calendar.getInstance();
 		int res = 12;
 		if (spendings != null && !spendings.isEmpty()) {
 			for (Spending spending : spendings) {
 				c.setTime(spending.getDate());
 				if (c.get(Calendar.YEAR) == year) {
-					if (c.get(Calendar.MONTH) < res) {
+					if (c.get(Calendar.MONTH) < res && c.get(Calendar.MONTH) >= min) {
 						res = c.get(Calendar.MONTH);
 					}
 				}
@@ -229,7 +229,14 @@ public class Controller {
 		}
 		System.out.println("is same year = " + isSameYear);
 		Calendar spendingDate = Calendar.getInstance();
-		int firstMonth = GetFirstMonth(allSpendings, minYear);
+		int minMonth = today.get(Calendar.MONTH) - numberOfMonths;
+		if(minMonth < 0) 
+		{
+			minMonth = 12 + minMonth;
+		}
+		System.out.println("min month = " + minMonth);
+		int firstMonth = GetFirstMonthSuperiorToMin(allSpendings, minYear, minMonth);
+		System.out.println("first month = " + firstMonth);
 		int spendingsSize = allSpendings.size();
 		Spending spending;
 		for (int i = minYear; i < today.get(Calendar.YEAR) + 1; i++) {
