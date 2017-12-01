@@ -9,9 +9,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TransactionController {
     private static DatabaseManager databaseManager = DatabaseManager.getInstance();
@@ -54,7 +53,8 @@ public class TransactionController {
         }
     }
 
-    public static void DeleteTransaction(int id) {
+    @SuppressWarnings("unchecked")
+    public static boolean DeleteTransaction(int id) {
         try {
             databaseManager.Delete(Transaction.class, id);
             ArrayList<Spending> spendings = (ArrayList<Spending>) databaseManager.SelectAll(Spending.class,
@@ -63,17 +63,74 @@ public class TransactionController {
                     spendings) {
                 databaseManager.Delete(Spending.class, spending.getId());
             }
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private static void CreateNewSpending(float amount, Category category, Date date, String description, Transaction transaction)
+    public static boolean CreateNewCategory(String name) {
+        try {
+            int avalaibleID = databaseManager.GetLastID(Category.class);
+            Category category = new Category(avalaibleID, name);
+            databaseManager.Insert(category);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static void CreateNewSpending(float amount, Category category, Date date, String description,
+                                          Transaction transaction)
             throws SQLException {
         int availableID = databaseManager.GetLastID(Spending.class);
         Spending spending = new Spending(availableID, amount, description, date, category, transaction);
         databaseManager.Insert(spending);
     }
 
+    @SuppressWarnings("unchecked")
+    public static Map<String, Float> Get5BiggestSpendingByCategory() {
+        try {
+            HashMap<String, Float> sumMap = new HashMap<>();
+            HashMap<String, Float> res = new HashMap<>();
+            ArrayList<Spending> spendings = (ArrayList<Spending>) databaseManager.SelectAll(Spending.class);
+            HashMap<String, List<Spending>> hashMap = new HashMap<>();
+            for (Spending spending :
+                    spendings) {
+                if (!hashMap.containsKey(spending.getCategory().getName())) {
+                    List<Spending> listValue = new ArrayList<>();
+                    listValue.add(spending);
+                    hashMap.put(spending.getCategory().getName(), listValue);
+                } else {
+                    hashMap.get(spending.getCategory().getName()).add(spending);
+                }
+            }
+            for (String key :
+                    hashMap.keySet()) {
+                float sum = (float) hashMap.get(key).stream().mapToDouble(Spending::getAmount).sum();
+                sumMap.put(key, sum);
+            }
+            Map<String, Float> sortedMap = sumMap.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                    .collect(Collectors.
+                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+            int k = 0;
+            for (Map.Entry<String, Float> entry :
+                    sortedMap.entrySet()) {
+                if (k < 5) {
+                    res.put(entry.getKey(), entry.getValue());
+                    k++;
+                } else
+                    break;
+            }
+            return res;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new HashMap<>(5);
+        }
+    }
 
 }
