@@ -16,7 +16,7 @@
                     <tabs>
                         <Tab id="Tab_Resume" closable="false" text="Resume">
                             <content>
-                                <AnchorPane id="AnchorPane_Tab_Resume_Main" minHeight="0.0" minWidth="0.0"
+                                <AnchorPane fx:id="AnchorPane_Tab_Resume_Main" id="AnchorPane_Tab_Resume_Main" minHeight="0.0" minWidth="0.0"
                                             prefHeight="180.0" prefWidth="200.0">
                                     <children>
                                         <ScrollPane id="ScrollPane_Resume" fx:id="ScrollPane_Resume" hbarPolicy="ALWAYS"

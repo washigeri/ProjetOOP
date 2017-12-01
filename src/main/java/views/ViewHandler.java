@@ -3,6 +3,7 @@ package views;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 import java.util.Map;
@@ -80,6 +81,9 @@ public class ViewHandler {
     @FXML
     protected TextField TextField_AddTransaction_Repetition;
 
+    @FXML
+    protected AnchorPane AnchorPane_Tab_Resume_Main;
+    
     @FXML
     private void handleAddTransactionButtonAction() {
         // Button was clicked, do something...

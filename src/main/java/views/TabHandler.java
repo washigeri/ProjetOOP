@@ -1,5 +1,6 @@
 package views;
 
+import controllers.Controller;
 import controllers.TransactionController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,10 +21,10 @@ public class TabHandler {
                         switch (newValue.getId()) {
                             case "Tab_Resume":
                                 System.out.println("Resume");
+                                LoadSummaryTab();
                                 break;
                             case "Tab_AddTransaction":
                                 System.out.println("Transaction");
-
                                 break;
                             case "Tab_Hebdo":
                                 System.out.println("Hebo");
@@ -46,6 +47,11 @@ public class TabHandler {
 
     private static void LoadAddTransactionTab() {
         ArrayList<Category> categories = (ArrayList<Category>) TransactionController.GetAllCategories();
-
+    }
+    
+    private static void LoadSummaryTab() {
+    	viewHandler.Text_Resume_Hebdo.setText("" + Controller.GetAmountSpentOverTheLastWeek() + " $");
+    	viewHandler.Text_Resume_Mensuel.setText("" + Controller.GetAmountSpentOverTheLastMonth() + " $");
+    	viewHandler.AnchorPane_Tab_Resume_Main.getChildren().add(Controller.ShowGraphOfSpendingsOverTheLastMonths(0));
     }
 }
