@@ -1,4 +1,4 @@
-package sample;
+package views;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
