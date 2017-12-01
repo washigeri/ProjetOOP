@@ -1,12 +1,22 @@
 package views;
 
+import controllers.TransactionController;
+import database.DatabaseManager;
 import javafx.fxml.FXML;
-import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import models.Category;
+import models.User;
+
+import java.sql.Date;
+import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class ViewHandler {
-
 
     @FXML
     public TextField TextField_AddTransaction_Montant;
@@ -41,9 +51,7 @@ public class ViewHandler {
 
     @FXML
     protected Text Text_Resume_Mensuel;
-
-    @FXML
-    protected LineChart<Number, Number> LineChart_Resume;
+    
 
     @FXML
     protected Text Text_Hebdo_Current;
@@ -51,8 +59,6 @@ public class ViewHandler {
     @FXML
     protected Text Text_Hebdo_Past;
 
-    @FXML
-    protected LineChart<Number, Number> LineChart_Hebdo;
 
     @FXML
     protected Text Text_Monthly_Current;
@@ -60,8 +66,6 @@ public class ViewHandler {
     @FXML
     protected Text Text_Monthly_Past;
 
-    @FXML
-    protected LineChart<Number, Number> LineChart_Mensuel;
 
     @FXML
     protected ListView ListView_Transactions;
@@ -79,28 +83,81 @@ public class ViewHandler {
     protected TextField TextField_AddTransaction_Repetition;
 
     @FXML
+    protected Button AddCategoryValidateButton;
+
+    @FXML
+    protected TextField AddTransactionFieldName;
+
+    @FXML
     private void handleAddTransactionButtonAction() {
-        // Button was clicked, do something...
-        System.out.println("Button AddTransaction Clicked");
-        System.out.println(TextField_AddTransaction_Montant.getText());
-        System.out.println(TextField_AddTransaction_Repetition.getText());
+
+        try {
+            Category category = (Category) DatabaseManager.getInstance().Select(Category.class
+                    , this.ChoiceBox_AddTransaction_Categorie.getSelectionModel().getSelectedItem().getKey());
+            String description = this.TextArea_AddTransaction_Description.getText();
+            LocalDate stardDate = this.DatePicker_AddTransaction_Start.getValue();
+            LocalDate endDate = this.DatePicker_AddTransaction_End.getValue();
+            float amount = Float.parseFloat(this.TextField_AddTransaction_Montant.getText());
+            int frequency;
+            if (endDate == null) {
+                frequency = 0;
+                endDate = stardDate;
+            } else {
+                frequency = Integer.parseInt(this.TextField_AddTransaction_Repetition.getText());
+                String daysOrWeeks = this.ChoiceBox_AddTransaction_Repetition.getSelectionModel().getSelectedItem();
+                int multiplier = (daysOrWeeks.equals("Jours")) ? 1 : 7;
+                frequency *= multiplier;
+            }
+            TransactionController.CreateNewTransaction(amount, category, frequency, description,
+                    new User(1, "test_user", "pwd"), Date.from(
+                            Instant.from(stardDate.atStartOfDay(ZoneId.systemDefault()))
+                    ), Date.from(Instant.from(
+                            endDate.atStartOfDay(ZoneId.systemDefault())
+                    )));
+            System.out.println("");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @FXML
     private void handleAddCategoryButtonAction() {
-        // Button was clicked, do something...
-        System.out.println("Button AddCategory Clicked");
+        this.AddCategoryValidateButton.disableProperty().setValue(false);
+        this.AddTransactionFieldName.disableProperty().setValue(false);
 
     }
 
     @FXML
-    private void handleStartDateSelection() {
-
+    private void handleValidateCategoryButton() {
+        String name = this.AddTransactionFieldName.getText();
+        if (!Objects.equals(name, "")) {
+            TransactionController.CreateNewCategory(name);
+            this.AddCategoryValidateButton.disableProperty().setValue(true);
+            this.AddTransactionFieldName.disableProperty().setValue(true);
+            ArrayList<Category> categories = (ArrayList<Category>) TransactionController.GetAllCategories();
+            this.ChoiceBox_AddTransaction_Categorie.getItems().clear();
+            for (Category category :
+                    categories) {
+                this.ChoiceBox_AddTransaction_Categorie.getItems().add(
+                        new IntStringPair(category.getId(), category.getName()));
+            }
+            this.ChoiceBox_AddTransaction_Categorie.getSelectionModel().selectLast();
+        }
     }
 
     @FXML
     private void handleEndDateSelection() {
+        LocalDate date = this.DatePicker_AddTransaction_End.getValue();
+        if (date.isAfter(this.DatePicker_AddTransaction_Start.getValue())) {
+            this.TextField_AddTransaction_Repetition.disableProperty().setValue(false);
+            this.ChoiceBox_AddTransaction_Repetition.disableProperty().setValue(false);
+        } else {
+            this.TextField_AddTransaction_Repetition.disableProperty().setValue(true);
+            this.ChoiceBox_AddTransaction_Repetition.disableProperty().setValue(true);
 
+        }
     }
 
 }

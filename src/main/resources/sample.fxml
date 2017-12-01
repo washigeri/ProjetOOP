@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
@@ -27,17 +26,6 @@
                                                 <AnchorPane/>
                                             </content>
                                         </ScrollPane>
-                                        <LineChart id="LineChart_Resume" fx:id="LineChart_Resume" layoutX="304.0"
-                                                   layoutY="59.0" prefHeight="472.0" prefWidth="887.0"
-                                                   title="Cumul des depenses des 30 derniers jours"
-                                                   AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0">
-                                            <xAxis>
-                                                <CategoryAxis label="Jour" side="BOTTOM"/>
-                                            </xAxis>
-                                            <yAxis>
-                                                <NumberAxis label="Depenses" side="LEFT" upperBound="1000.0"/>
-                                            </yAxis>
-                                        </LineChart>
                                         <AnchorPane id="AnchorPane_Resume_Hebdo" layoutX="40.0" layoutY="59.0"
                                                     prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0"
                                                     AnchorPane.topAnchor="200.0">
@@ -105,6 +93,8 @@
                                                 </Text>
                                             </children>
                                         </AnchorPane>
+                                        <AnchorPane layoutX="487.0" layoutY="95.0" prefHeight="271.0"
+                                                    prefWidth="307.0"/>
                                     </children>
                                 </AnchorPane>
                             </content>
@@ -136,7 +126,7 @@
                                                 <TextField id="TextField_AddTransaction_Montant"
                                                            fx:id="TextField_AddTransaction_Montant" layoutX="25.0"
                                                            layoutY="70.0" prefHeight="60.0" prefWidth="150.0"
-                                                           promptText="0.00">
+                                                           promptText="0.00" text="0.00">
                                                     <font>
                                                         <Font size="29.0"/>
                                                     </font>
@@ -156,10 +146,15 @@
                                                     </font>
                                                 </Label>
                                                 <Button id="Button_AddTransaction_AddCategorie"
-                                                        fx:id="Button_AddTransaction_AddCategorie" layoutX="237.0"
+                                                        fx:id="Button_AddTransaction_AddCategorie" layoutX="179.0"
                                                         layoutY="81.0" mnemonicParsing="false"
-                                                        onAction="#handleAddCategoryButtonAction" prefWidth="150.0"
-                                                        text="Ajouter une categorie"/>
+                                                        onAction="#handleAddCategoryButtonAction" prefHeight="25.0"
+                                                        prefWidth="29.0" text="+"/>
+                                                <TextField fx:id="AddTransactionFieldName" disable="true" layoutX="26.0"
+                                                           layoutY="119.0" promptText="Nom de catégorie"/>
+                                                <Button fx:id="AddCategoryValidateButton" disable="true" layoutX="182.0"
+                                                        layoutY="119.0" mnemonicParsing="false"
+                                                        onAction="#handleValidateCategoryButton" text="Valider"/>
                                             </children>
                                         </AnchorPane>
                                         <AnchorPane id="AnchorPane_Tab_AddTransaction_Description" layoutX="575.0"
@@ -186,7 +181,7 @@
                                             <children>
                                                 <DatePicker id="DatePicker_AddTransaction_Start"
                                                             fx:id="DatePicker_AddTransaction_Start" layoutX="13.0"
-                                                            layoutY="41.0" onAction="#handleStartDateSelection"/>
+                                                            layoutY="41.0"/>
                                                 <Label layoutX="62.0" layoutY="24.0" text="Date de début"/>
                                                 <DatePicker id="DatePicker_AddTransaction_End"
                                                             fx:id="DatePicker_AddTransaction_End" layoutX="13.0"
@@ -218,17 +213,6 @@
                                                 <AnchorPane/>
                                             </content>
                                         </ScrollPane>
-                                        <LineChart id="LineChart_Hebdo" fx:id="LineChart_Hebdo" layoutX="348.0"
-                                                   layoutY="27.0" prefHeight="472.0" prefWidth="887.0"
-                                                   title="Cumul des depenses des 7 derniers jours"
-                                                   AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0">
-                                            <xAxis>
-                                                <CategoryAxis label="Jour" side="BOTTOM"/>
-                                            </xAxis>
-                                            <yAxis>
-                                                <NumberAxis label="Depenses" side="LEFT" upperBound="1000.0"/>
-                                            </yAxis>
-                                        </LineChart>
                                         <AnchorPane id="AnchorPane_Hebdo_Current" layoutX="45.0" layoutY="49.0"
                                                     prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0"
                                                     AnchorPane.topAnchor="40.0">
@@ -274,6 +258,8 @@
                                                 </Text>
                                             </children>
                                         </AnchorPane>
+                                        <AnchorPane layoutX="625.0" layoutY="95.0" prefHeight="348.0"
+                                                    prefWidth="354.0"/>
                                     </children>
                                 </AnchorPane>
                             </content>
@@ -327,17 +313,6 @@
                                                 </Label>
                                             </children>
                                         </AnchorPane>
-                                        <LineChart id="LineChart_Mensuel" fx:id="LineChart_Mensuel" layoutX="348.0"
-                                                   layoutY="27.0" prefHeight="472.0" prefWidth="887.0"
-                                                   title="Cumul des depenses des 7 derniers jours"
-                                                   AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0">
-                                            <xAxis>
-                                                <CategoryAxis label="Jour" side="BOTTOM"/>
-                                            </xAxis>
-                                            <yAxis>
-                                                <NumberAxis label="Depenses" side="LEFT" upperBound="1000.0"/>
-                                            </yAxis>
-                                        </LineChart>
                                         <ScrollPane id="ScrollPane_Mensuel" fx:id="ScrollPane_Mensuel"
                                                     hbarPolicy="ALWAYS" layoutX="45.0" layoutY="531.0"
                                                     prefHeight="136.0" prefWidth="1190.0" vbarPolicy="NEVER"
@@ -347,6 +322,8 @@
                                                 <AnchorPane/>
                                             </content>
                                         </ScrollPane>
+                                        <AnchorPane layoutX="444.0" layoutY="77.0" prefHeight="326.0"
+                                                    prefWidth="411.0"/>
                                     </children>
                                 </AnchorPane>
                             </content>

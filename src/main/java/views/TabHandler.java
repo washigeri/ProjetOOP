@@ -59,7 +59,10 @@ public class TabHandler {
         viewHandler.DatePicker_AddTransaction_Start.setValue(new Date()
                 .toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
+        viewHandler.ChoiceBox_AddTransaction_Repetition.getItems().addAll("Jours", "Semaines");
+        viewHandler.ChoiceBox_AddTransaction_Repetition.getSelectionModel().selectFirst();
     }
+
 }
 
 class IntStringPair {
