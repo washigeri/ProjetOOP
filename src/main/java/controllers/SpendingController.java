@@ -288,10 +288,10 @@ public class SpendingController {
 		String title;
 		if (periodIndex == Calendar.MONTH) {
 			size = 31;
-			title = "Evolution des dépenses au cours du mois " + period + " de " + year;
+			title = "Evolution des dÃ©penses au cours du mois " + period + " de " + year;
 		} else if (periodIndex == Calendar.WEEK_OF_YEAR || periodIndex == Calendar.WEEK_OF_MONTH) {
 			size = 7;
-			title = "Evolution des dépenses au cours de la semaine " + period + " de " + year;
+			title = "Evolution des dÃ©penses au cours de la semaine " + period + " de " + year;
 		} else {
 			size = 0;
 			title = "";
@@ -301,7 +301,7 @@ public class SpendingController {
 		int totalSpendings = GetTotalSpendings(serie);
 		NumberAxis yAxis = new NumberAxis(0, totalSpendings, totalSpendings / 10);
 		xAxis.setLabel("Nombre de jours");
-		yAxis.setLabel("Dépenses");
+		yAxis.setLabel("DÃ©penses");
 		LineChart<Number, Number> res = new LineChart<Number, Number>(xAxis, yAxis);
 		res.setTitle(title);
 		res.getData().add(serie);

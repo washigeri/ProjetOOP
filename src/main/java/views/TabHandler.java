@@ -92,7 +92,6 @@ public class TabHandler {
         viewHandler.Text_Resume_Mensuel.setText("$ " + Controller.GetAmountSpentOverTheLastMonth());
         viewHandler.Anchor_Resume_LineChart.getChildren().clear();
         LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
-    	//LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(10, Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
         x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
         x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
         viewHandler.Anchor_Resume_LineChart.getChildren().add(x);
@@ -112,17 +111,17 @@ public class TabHandler {
     	}
     	List<IntStringPair> months = new ArrayList<IntStringPair>();
     	months.add(new IntStringPair(0, "Janvier"));
-    	months.add(new IntStringPair(1, "F�vrier"));
+    	months.add(new IntStringPair(1, "Février"));
     	months.add(new IntStringPair(2, "Mars"));
     	months.add(new IntStringPair(3, "Avril"));
     	months.add(new IntStringPair(4, "Mai"));
     	months.add(new IntStringPair(5, "Juin"));
     	months.add(new IntStringPair(6, "Juillet"));
-    	months.add(new IntStringPair(7, "Ao�t"));
+    	months.add(new IntStringPair(7, "Août"));
     	months.add(new IntStringPair(8, "Septembre"));
     	months.add(new IntStringPair(9, "Octobre"));
     	months.add(new IntStringPair(10, "Novembre"));
-    	months.add(new IntStringPair(11, "D�cembre"));
+    	months.add(new IntStringPair(11, "Décembre"));
     	viewHandler.ComboBox_Suivi_Compare_Year.getItems().clear();
     	viewHandler.ComboBox_Suivi_Compare_Year.getItems().addAll(yearsFrom1970);
     	viewHandler.ComboBox_Suivi_Compare_Month.getItems().clear();
