@@ -1,28 +1,25 @@
  package views;
 
-import controllers.Controller;
-import controllers.SpendingController;
-import controllers.TransactionController;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Side;
-import javafx.scene.Node;
-import javafx.scene.chart.LineChart;
-import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.chart.PieChart;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import models.Category;
-import models.Spending;
-import models.Transaction;
+ import controllers.Controller;
+ import controllers.SpendingController;
+ import controllers.TransactionController;
+ import javafx.collections.FXCollections;
+ import javafx.collections.ObservableList;
+ import javafx.geometry.Side;
+ import javafx.scene.Node;
+ import javafx.scene.chart.LineChart;
+ import javafx.scene.chart.PieChart;
+ import javafx.scene.control.*;
+ import javafx.scene.layout.HBox;
+ import javafx.scene.layout.VBox;
+ import javafx.scene.text.Text;
+ import javafx.scene.text.TextAlignment;
+ import models.Category;
+ import models.Spending;
+ import models.Transaction;
 
-import java.time.ZoneId;
-import java.util.*;
+ import java.time.ZoneId;
+ import java.util.*;
 
 public class TabHandler {
 
@@ -35,22 +32,6 @@ public class TabHandler {
     public static void TabChangeHandler() {
         viewHandler.tabPane.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    switch (newValue.getId()) {
-                        case "Tab_Resume":
-                            TabHandler.LoadSummaryTab();
-                            break;
-                        case "Tab_AddTransaction":
-                            TabHandler.LoadAddTransactionTab();
-                            break;
-                        case "Tab_Suivi":
-                            LoadSuiviTab();
-                            break;
-                        case "Tab_Historique":
-                            TabHandler.LoadHistoryTab();
-                            break;
-                    }
-                }
-        );
                     TabHandler.ExecuteCorrespondingTabLoad(newValue);
                 }
         );
@@ -64,9 +45,8 @@ public class TabHandler {
             case "Tab_AddTransaction":
                 TabHandler.LoadAddTransactionTab();
                 break;
-            case "Tab_Hebdo":
-                break;
-            case "Tab_Mensuel":
+            case "Tab_Suivi":
+                LoadSuiviTab();
                 break;
             case "Tab_Historique":
                 TabHandler.LoadHistoryTab();
