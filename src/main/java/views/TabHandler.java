@@ -24,15 +24,13 @@ public class TabHandler {
 
     public static ViewHandler viewHandler;
 
-    public static void RefreshTab(Tab selectedTab) {
+    static void RefreshTab(Tab selectedTab) {
         TabHandler.ExecuteCorrespondingTabLoad(selectedTab);
     }
 
     public static void TabChangeHandler() {
         viewHandler.tabPane.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    TabHandler.ExecuteCorrespondingTabLoad(newValue);
-                }
+                (observable, oldValue, newValue) -> TabHandler.ExecuteCorrespondingTabLoad(newValue)
         );
     }
 
@@ -71,13 +69,38 @@ public class TabHandler {
         ArrayList<Transaction> transactions = (ArrayList<Transaction>) TransactionController.GetAllActiveTransactions();
         ListView<HBox> listView = viewHandler.TransactionList;
         listView.getItems().clear();
+        Alert alertDeleteConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        alertDeleteConfirmation.setTitle("Confirmation de suppression");
+        alertDeleteConfirmation.setHeaderText(null);
+        alertDeleteConfirmation.setContentText("Voulez-vous vraiment\nsupprimer cette transaction ?");
+        ButtonType buttonYes = new ButtonType("Oui");
+        ButtonType buttonNo = new ButtonType("Non");
+        alertDeleteConfirmation.getButtonTypes().setAll(buttonYes, buttonNo);
+        Alert alertDeleteSuccess = new Alert(Alert.AlertType.INFORMATION);
+        alertDeleteSuccess.setTitle("Information");
+        alertDeleteSuccess.setHeaderText(null);
+        alertDeleteSuccess.setContentText("Suppression réussie");
+        Alert alertDeleteFailure = new Alert(Alert.AlertType.ERROR);
+        alertDeleteFailure.setTitle("Erreur");
+        alertDeleteFailure.setHeaderText(null);
+        alertDeleteFailure.setContentText("Une erreur est survenue lors de la suppression");
         for (Transaction transaction :
                 transactions) {
             Text text = new Text(transaction.toString2());
             Button button = new Button("Supprimer");
             button.setOnAction(event -> {
-                TransactionController.DeleteTransaction(transaction.getId());
-                RefreshTab(viewHandler.tabPane.getSelectionModel().getSelectedItem());
+                Optional<ButtonType> result = alertDeleteConfirmation.showAndWait();
+                boolean res;
+                if (result.isPresent() && result.get() == buttonYes) {
+                    res = TransactionController.DeleteTransaction(transaction.getId());
+                    RefreshTab(viewHandler.tabPane.getSelectionModel().getSelectedItem());
+                    if (res)
+                        alertDeleteSuccess.showAndWait();
+                    else
+                        alertDeleteFailure.showAndWait();
+                } else if (result.isPresent() && result.get() == buttonNo)
+                    RefreshTab(viewHandler.tabPane.getSelectionModel().getSelectedItem());
+
             });
             HBox hBox = new HBox();
             hBox.getChildren().addAll(text, button);
@@ -107,11 +130,11 @@ public class TabHandler {
         x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
         x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
         viewHandler.Anchor_Suivi_LineChart.getChildren().add(x);
-        List<Integer> yearsFrom1970 = new ArrayList<Integer>();
+        List<Integer> yearsFrom1970 = new ArrayList<>();
         for (int i = Calendar.getInstance().get(Calendar.YEAR); i > 1969; i--) {
             yearsFrom1970.add(i);
         }
-        List<IntStringPair> months = new ArrayList<IntStringPair>();
+        List<IntStringPair> months = new ArrayList<>();
         months.add(new IntStringPair(0, "Janvier"));
         months.add(new IntStringPair(1, "Février"));
         months.add(new IntStringPair(2, "Mars"));

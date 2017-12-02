@@ -170,16 +170,17 @@ public class ViewHandler {
                 frequency *= multiplier;
             }
             LocalDate today = LocalDate.now(ZoneId.systemDefault());
+            boolean result;
             if (stardDate.isEqual(today)) {
                 LocalDateTime now = stardDate.atTime(LocalTime.now());
-                TransactionController.CreateNewTransaction(amount, category, frequency, description,
+                result = TransactionController.CreateNewTransaction(amount, category, frequency, description,
                         new User(1, "test_user", "pwd"), Date.from(
                                 now.atZone(ZoneId.systemDefault()).toInstant()),
                         Date.from(Instant.from(
                                 endDate.atStartOfDay(ZoneId.systemDefault())
                         )));
             } else {
-                TransactionController.CreateNewTransaction(amount, category, frequency, description,
+                result = TransactionController.CreateNewTransaction(amount, category, frequency, description,
                         new User(1, "test_user", "pwd"), Date.from(
                                 Instant.from(
                                         stardDate.atStartOfDay(ZoneId.systemDefault())
@@ -189,6 +190,19 @@ public class ViewHandler {
                         )));
             }
             handleOnMenuRefresh();
+            if (result) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information");
+                alert.setHeaderText(null);
+                alert.setContentText("Création réussie");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur");
+                alert.setHeaderText(null);
+                alert.setContentText("Une erreur est servenue lors de la création");
+                alert.showAndWait();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
