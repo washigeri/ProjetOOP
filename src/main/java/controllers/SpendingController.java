@@ -23,6 +23,7 @@ public class SpendingController {
 
 	public static final long MILLISINADAY = 86400000;
 
+	@SuppressWarnings("unchecked")
 	public static List<Spending> GetSpendingsOverTheLastDays(int numberOfDays) {
 		List<Spending> res = new ArrayList<Spending>();
 		try {
@@ -65,7 +66,6 @@ public class SpendingController {
 		try {
 			List<Spending> allSpendings = (List<Spending>) databaseManager.SelectAll(Spending.class);
 			Calendar today = Calendar.getInstance();
-			System.out.println("year = " + Calendar.YEAR + "   MONTH = " + Calendar.MONTH);
 			today.set(Calendar.HOUR_OF_DAY, 0);
 			today.set(Calendar.MINUTE, 0);
 			today.set(Calendar.SECOND, 0);
