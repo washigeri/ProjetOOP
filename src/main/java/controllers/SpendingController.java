@@ -64,15 +64,11 @@ public class SpendingController {
         try {
             List<Spending> allSpendings = (List<Spending>) databaseManager.SelectAll(Spending.class);
             Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
-            today.set(Calendar.MINUTE, 0);
-            today.set(Calendar.SECOND, 0);
-            today.set(Calendar.MILLISECOND, 0);
             Calendar c = Calendar.getInstance();
             for (Spending spending : allSpendings) {
                 c.setTime(spending.getDate());
                 if (today.get(Calendar.YEAR) == c.get(Calendar.YEAR)) {
-                    if (today.get(Calendar.WEEK_OF_YEAR) - c.get(Calendar.WEEK_OF_YEAR) <= numberOfWeeks) {
+                    if (today.get(Calendar.WEEK_OF_YEAR) - c.get(Calendar.WEEK_OF_YEAR) <= numberOfWeeks && today.compareTo(c) > 0) {
                         res.add(spending);
                     }
                 } else if (today.get(Calendar.YEAR) > c.get(Calendar.YEAR)) {
@@ -97,21 +93,17 @@ public class SpendingController {
         try {
             List<Spending> allSpendings = (List<Spending>) databaseManager.SelectAll(Spending.class);
             Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
-            today.set(Calendar.MINUTE, 0);
-            today.set(Calendar.SECOND, 0);
-            today.set(Calendar.MILLISECOND, 0);
             Calendar c = Calendar.getInstance();
             for (Spending spending : allSpendings) {
                 c.setTime(spending.getDate());
                 if (today.get(Calendar.YEAR) == c.get(Calendar.YEAR)) {
-                    if (today.get(Calendar.MONTH) - c.get(Calendar.MONTH) <= numberOfMonths) {
+                    if (today.get(Calendar.MONTH) - c.get(Calendar.MONTH) <= numberOfMonths && today.compareTo(c)>0) {
                         res.add(spending);
                     }
                 } else if (today.get(Calendar.YEAR) > c.get(Calendar.YEAR)) {
                     if (today.get(Calendar.MONTH) + 12 * (today.get(Calendar.YEAR) - c.get(Calendar.YEAR))
                             - c.get(Calendar.MONTH) <= numberOfMonths) {
-                        res.add(spending);
+                    	res.add(spending);
                     }
                 }
             }

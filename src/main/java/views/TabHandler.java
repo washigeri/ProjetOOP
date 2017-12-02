@@ -1,6 +1,5 @@
  package views;
 
- import controllers.Controller;
  import controllers.SpendingController;
  import controllers.TransactionController;
  import javafx.collections.FXCollections;
@@ -88,8 +87,8 @@ public class TabHandler {
     }
 
     private static void LoadSummaryTab() {
-        viewHandler.Text_Resume_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
-        viewHandler.Text_Resume_Mensuel.setText("$ " + Controller.GetAmountSpentOverTheLastMonth());
+        viewHandler.Text_Resume_Hebdo.setText("$ " + SpendingController.GetAmountSpentOverTheLastWeek());
+        viewHandler.Text_Resume_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
         viewHandler.Anchor_Resume_LineChart.getChildren().clear();
         LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
         x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
@@ -99,7 +98,7 @@ public class TabHandler {
 
     private static void LoadSuiviTab() {
     	//viewHandler.Text_Suivi_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
-    	viewHandler.Text_Suivi_Mensuel.setText("$ " + Controller.GetAmountSpentOverTheLastMonth());
+    	viewHandler.Text_Suivi_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
     	viewHandler.Anchor_Suivi_LineChart.getChildren().clear();
     	LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
     	x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
