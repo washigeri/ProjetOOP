@@ -4,9 +4,16 @@ import controllers.SpendingController;
 import controllers.TransactionController;
 import database.DatabaseManager;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -14,12 +21,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import models.Category;
 import models.User;
+import utils.IntStringPair;
 
 import java.sql.SQLException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class ViewHandler {
@@ -122,6 +132,95 @@ public class ViewHandler {
     protected AnchorPane Anchor_Suivi_Category_PieChart;
 
     @FXML
+    protected Button Button_Suivi_Month;
+    
+    @FXML
+    protected Button Button_Suivi_Week;
+    
+    public boolean switchButton()
+    {
+    	boolean monthButtonValue = Button_Suivi_Month.disabledProperty().getValue();
+    	Button_Suivi_Month.disableProperty().setValue(Button_Suivi_Week.disabledProperty().getValue());
+    	Button_Suivi_Week.disableProperty().setValue(monthButtonValue);
+    	return !monthButtonValue;
+    }
+    
+    private void toggleCompareButtons()
+    {
+    	Button_Suivi_Compare.visibleProperty().setValue(!Button_Suivi_Compare.visibleProperty().getValue());
+    	ComboBox_Suivi_Compare_Month.visibleProperty().setValue(!ComboBox_Suivi_Compare_Month.visibleProperty().getValue());
+    	ComboBox_Suivi_Compare_Year.visibleProperty().setValue(!ComboBox_Suivi_Compare_Year.visibleProperty().getValue());
+    }
+    
+    private void updateViewSuivi(boolean monthValue) {
+    	if(!monthValue) {
+    		Text_Suivi_Mensuel.setText("$" + SpendingController.GetAmountSpentOverTheLastMonth());
+    		Anchor_Suivi_LineChart.getChildren().clear();
+        	LineChart<String, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+        	x.setPrefWidth(Anchor_Suivi_LineChart.getWidth());
+        	x.setPrefHeight(Anchor_Suivi_LineChart.getHeight());
+        	Anchor_Suivi_LineChart.getChildren().add(x);
+        	PieChart pieChart = new PieChart();
+        	HashMap<Integer, Float> spendingsByCategory = SpendingController.GetSpendingsByCategoryDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+        	ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+        	Category c = null;
+        	for(Map.Entry<Integer, Float> entry : spendingsByCategory.entrySet()) {
+        		try {
+    				c = (Category) DatabaseManager.getInstance().Select(Category.class,entry.getKey());
+    				data.add(new PieChart.Data(c.getName(), entry.getValue()));
+    			} catch (SQLException e) {
+    	    		data.add(new PieChart.Data(Integer.toString(entry.getKey()), entry.getValue()));
+    				e.printStackTrace();
+    			}
+        	}
+        	pieChart.setData(data);
+        	pieChart.setLegendVisible(false);
+        	Anchor_Suivi_Category_PieChart.getChildren().clear();
+        	Anchor_Suivi_Category_PieChart.getChildren().add(pieChart);
+    	}
+    	else {
+    		Text_Suivi_Mensuel.setText("$" + SpendingController.GetAmountSpentOverTheLastWeek());
+    		Anchor_Suivi_LineChart.getChildren().clear();
+        	LineChart<String, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR), Calendar.WEEK_OF_YEAR, Calendar.getInstance().get(Calendar.YEAR));
+        	x.setPrefWidth(Anchor_Suivi_LineChart.getWidth());
+        	x.setPrefHeight(Anchor_Suivi_LineChart.getHeight());
+        	Anchor_Suivi_LineChart.getChildren().add(x);
+        	PieChart pieChart = new PieChart();
+        	HashMap<Integer, Float> spendingsByCategory = SpendingController.GetSpendingsByCategoryDuringPeriodOfYear(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR), Calendar.WEEK_OF_YEAR, Calendar.getInstance().get(Calendar.YEAR));
+        	ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+        	Category c = null;
+        	for(Map.Entry<Integer, Float> entry : spendingsByCategory.entrySet()) {
+        		try {
+    				c = (Category) DatabaseManager.getInstance().Select(Category.class,entry.getKey());
+    				data.add(new PieChart.Data(c.getName(), entry.getValue()));
+    			} catch (SQLException e) {
+    	    		data.add(new PieChart.Data(Integer.toString(entry.getKey()), entry.getValue()));
+    				e.printStackTrace();
+    			}
+        	}
+        	pieChart.setData(data);
+        	pieChart.setLegendVisible(false);
+        	Anchor_Suivi_Category_PieChart.getChildren().clear();
+        	Anchor_Suivi_Category_PieChart.getChildren().add(pieChart);
+    	}
+    	toggleCompareButtons();
+    }
+    
+    @FXML
+    private void handleButtonSuiviMonth() 
+    {
+    	boolean monthValue = switchButton();
+    	updateViewSuivi(!monthValue);
+    }
+    
+    @FXML
+    private void handleButtonSuiviWeek()
+    {
+    	boolean monthValue = switchButton();
+    	updateViewSuivi(!monthValue);
+    }
+    
+    @FXML
     private void handleAddModifyDateToCompare() {
     	try {
 	    	int year = ComboBox_Suivi_Compare_Year.getValue();
@@ -143,14 +242,22 @@ public class ViewHandler {
     private void handleAddPeriodToCompareToChartSuivi() {
     	int year = ComboBox_Suivi_Compare_Year.getValue();
     	int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
-    	XYChart.Series<Number, Number> serieToAdd = SpendingController.GetSeriesOfSpendingsDuringPeriodOfYear(month, Calendar.MONTH, year);
-    	LineChart<Number, Number> lineChart = (LineChart<Number, Number>) Anchor_Suivi_LineChart.getChildren().get(0);
-    	if(lineChart.getData().size() == 2) {
-    		lineChart.getData().remove(1);
-    	}
-    	lineChart.getData().add(serieToAdd);
+    	XYChart.Series<String, Number> nowSerie = SpendingController.GetSeriesOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+    	XYChart.Series<String, Number> serieToAdd = SpendingController.GetSeriesOfSpendingsDuringPeriodOfYear(month, Calendar.MONTH, year);
+    	CategoryAxis xAxis = new CategoryAxis();
+		xAxis.setCategories(FXCollections.observableList(SpendingController.DAYSOFMONTH));
+		int totalSpendings = Math.max(SpendingController.GetTotalSpendings(nowSerie), SpendingController.GetTotalSpendings(serieToAdd));
+		NumberAxis yAxis = new NumberAxis(0, totalSpendings, totalSpendings / 10);
+		xAxis.setLabel("Nombre de jours");
+		yAxis.setLabel("Dépenses");
+		LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
+		lineChart.setTitle("Comparaison entre " + SpendingController.MONTHSMAP.get(Calendar.getInstance().get(Calendar.MONTH)) + " " + Calendar.getInstance().get(Calendar.YEAR) + " et " + SpendingController.MONTHSMAP.get(month) + " " + year);
+		lineChart.getData().addAll(nowSerie, serieToAdd);
+		lineChart.setLegendVisible(false);
+    	Anchor_Suivi_LineChart.getChildren().clear();
+    	Anchor_Suivi_LineChart.getChildren().add(lineChart);
     }
-
+    
     @FXML
     private void handleAddTransactionButtonAction() {
         try {
@@ -179,7 +286,6 @@ public class ViewHandler {
                         Date.from(Instant.from(
                                 endDate.atStartOfDay(ZoneId.systemDefault())
                         )));
-                System.out.println("ok");
             } else {
                 TransactionController.CreateNewTransaction(amount, category, frequency, description,
                         new User(1, "test_user", "pwd"), Date.from(

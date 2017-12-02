@@ -2,7 +2,8 @@
 
  import controllers.SpendingController;
  import controllers.TransactionController;
- import javafx.collections.FXCollections;
+import database.DatabaseManager;
+import javafx.collections.FXCollections;
  import javafx.collections.ObservableList;
  import javafx.geometry.Side;
  import javafx.scene.Node;
@@ -16,8 +17,10 @@
  import models.Category;
  import models.Spending;
  import models.Transaction;
+import utils.IntStringPair;
 
- import java.time.ZoneId;
+import java.sql.SQLException;
+import java.time.ZoneId;
  import java.util.*;
 
 public class TabHandler {
@@ -90,41 +93,32 @@ public class TabHandler {
         viewHandler.Text_Resume_Hebdo.setText("$ " + SpendingController.GetAmountSpentOverTheLastWeek());
         viewHandler.Text_Resume_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
         viewHandler.Anchor_Resume_LineChart.getChildren().clear();
-        LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+        LineChart<String, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
         x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
         x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
         viewHandler.Anchor_Resume_LineChart.getChildren().add(x);
     }
 
     private static void LoadSuiviTab() {
-    	//viewHandler.Text_Suivi_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
+        viewHandler.Button_Suivi_Week.disableProperty().setValue(false);
+        viewHandler.Button_Suivi_Month.disableProperty().setValue(true);
+    	viewHandler.Button_Suivi_Compare.visibleProperty().setValue(true);
+    	viewHandler.ComboBox_Suivi_Compare_Month.visibleProperty().setValue(true);
+    	viewHandler.ComboBox_Suivi_Compare_Year.visibleProperty().setValue(true);
     	viewHandler.Text_Suivi_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
     	viewHandler.Anchor_Suivi_LineChart.getChildren().clear();
-    	LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
-    	x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
-    	x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
+    	LineChart<String, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+    	x.setPrefWidth(viewHandler.Anchor_Suivi_LineChart.getWidth());
+    	x.setPrefHeight(viewHandler.Anchor_Suivi_LineChart.getHeight());
     	viewHandler.Anchor_Suivi_LineChart.getChildren().add(x);
     	List<Integer> yearsFrom1970 = new ArrayList<Integer>();
     	for(int i=Calendar.getInstance().get(Calendar.YEAR); i > 1969; i--) {
     		yearsFrom1970.add(i);
     	}
-    	List<IntStringPair> months = new ArrayList<IntStringPair>();
-    	months.add(new IntStringPair(0, "Janvier"));
-    	months.add(new IntStringPair(1, "Février"));
-    	months.add(new IntStringPair(2, "Mars"));
-    	months.add(new IntStringPair(3, "Avril"));
-    	months.add(new IntStringPair(4, "Mai"));
-    	months.add(new IntStringPair(5, "Juin"));
-    	months.add(new IntStringPair(6, "Juillet"));
-    	months.add(new IntStringPair(7, "Août"));
-    	months.add(new IntStringPair(8, "Septembre"));
-    	months.add(new IntStringPair(9, "Octobre"));
-    	months.add(new IntStringPair(10, "Novembre"));
-    	months.add(new IntStringPair(11, "Décembre"));
     	viewHandler.ComboBox_Suivi_Compare_Year.getItems().clear();
     	viewHandler.ComboBox_Suivi_Compare_Year.getItems().addAll(yearsFrom1970);
     	viewHandler.ComboBox_Suivi_Compare_Month.getItems().clear();
-    	viewHandler.ComboBox_Suivi_Compare_Month.getItems().addAll(months);
+    	viewHandler.ComboBox_Suivi_Compare_Month.getItems().addAll(SpendingController.MONTHSMAP);
     	int previousMonth;
     	int previousMonthsYear;
     	Calendar today = Calendar.getInstance();
@@ -141,11 +135,18 @@ public class TabHandler {
     	PieChart pieChart = new PieChart();
     	HashMap<Integer, Float> spendingsByCategory = SpendingController.GetSpendingsByCategoryDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
     	ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+    	Category c = null;
     	for(Map.Entry<Integer, Float> entry : spendingsByCategory.entrySet()) {
-    		data.add(new PieChart.Data(entry.getKey().toString(), entry.getValue()));
+    		try {
+				c = (Category) DatabaseManager.getInstance().Select(Category.class,entry.getKey());
+				data.add(new PieChart.Data(c.getName(), entry.getValue()));
+			} catch (SQLException e) {
+	    		data.add(new PieChart.Data(Integer.toString(entry.getKey()), entry.getValue()));
+				e.printStackTrace();
+			}
     	}
     	pieChart.setData(data);
-    	pieChart.setLegendSide(Side.LEFT);
+    	pieChart.setLegendVisible(false);
     	viewHandler.Anchor_Suivi_Category_PieChart.getChildren().clear();
     	viewHandler.Anchor_Suivi_Category_PieChart.getChildren().add(pieChart);
     }
@@ -177,24 +178,4 @@ public class TabHandler {
         }
     }
 
-
-}
-
-class IntStringPair {
-    private final Integer key;
-    private final String value;
-
-    IntStringPair(Integer key, String value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    int getKey() {
-        return key;
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
 }

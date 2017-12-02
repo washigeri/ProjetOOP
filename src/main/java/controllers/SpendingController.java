@@ -2,13 +2,14 @@ package controllers;
 
 import database.DatabaseManager;
 import database.IDatabaseManager;
+import javafx.collections.FXCollections;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
 import models.Category;
 import models.Spending;
-
+import utils.IntStringPair;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,7 +21,38 @@ public class SpendingController {
 
     public static final long MILLISINADAY = 86400000;
     private static IDatabaseManager databaseManager = DatabaseManager.getInstance();
-
+    public static final List<String> DAYSOFWEEK = new ArrayList<String>() 
+    {{
+    	add("Lundi");
+    	add("Mardi");
+    	add("Mercredi");
+    	add("Jeudi");
+    	add("Vendredi");
+    	add("Samedi");
+    	add("Dimanche");
+    }};
+    public static final List<String> DAYSOFMONTH = new ArrayList<String>()
+    {{
+    	for(int i=1;i<32;i++) {
+    		add(Integer.toString(i));
+    	}
+    }};
+    public static final List<IntStringPair> MONTHSMAP = new ArrayList<IntStringPair>()
+    {{
+    	add(new IntStringPair(0, "Janvier"));
+    	add(new IntStringPair(1, "Février"));
+    	add(new IntStringPair(2, "Mars"));
+    	add(new IntStringPair(3, "Avril"));
+    	add(new IntStringPair(4, "Mai"));
+    	add(new IntStringPair(5, "Juin"));
+    	add(new IntStringPair(6, "Juillet"));
+    	add(new IntStringPair(7, "Août"));
+    	add(new IntStringPair(8, "Septembre"));
+    	add(new IntStringPair(9, "Octobre"));
+    	add(new IntStringPair(10, "Novembre"));
+    	add(new IntStringPair(11, "Décembre"));
+    }};
+    
     @SuppressWarnings("unchecked")
     public static List<Spending> GetSpendingsOverTheLastDays(int numberOfDays) {
         List<Spending> res = new ArrayList<Spending>();
@@ -224,7 +256,7 @@ public class SpendingController {
         return res;
     }
 
-    public static XYChart.Series<Number, Number> GetSeriesOfSpendingsDuringPeriodOfYear(int period, int periodIndex, int year) {
+    public static XYChart.Series<String, Number> GetSeriesOfSpendingsDuringPeriodOfYear(int period, int periodIndex, int year) {
 		int size;
 		int weekOrMonth;
 		Calendar today = Calendar.getInstance();
@@ -246,41 +278,44 @@ public class SpendingController {
 			weekOrMonth = 0;
 		}
 		float[] spendingsPerDays = new float[size];
-
 		Calendar spendingCal = Calendar.getInstance();
 		List<Spending> allSpendings = GetSpendingsDuringPeriodOfYear(period, periodIndex, year);
 		for (Spending spending : allSpendings) {
 			spendingCal.setTime(spending.getDate());
 			if (spendingCal.get(Calendar.YEAR) == year && spendingCal.get(periodIndex) == period) {
+				System.out.println("day is " + (spendingCal.get(weekOrMonth) - 1));
 				spendingsPerDays[spendingCal.get(weekOrMonth) - 1] += spending.getAmount();
 			}
 		}
-		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+		XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
 		float totalSpendings = 0f;
 		int seriesLength = (year == Calendar.getInstance().get(Calendar.YEAR) && period == Calendar.getInstance().get(periodIndex))?Calendar.getInstance().get(weekOrMonth):size;
 		for (int i = 0; i < seriesLength; i++) {
 			totalSpendings += spendingsPerDays[i];
-			series.getData().add(new XYChart.Data<Number, Number>(i + 1, totalSpendings));
+			if(Calendar.MONTH == periodIndex) {
+				series.getData().add(new XYChart.Data<String, Number>(DAYSOFMONTH.get(i), totalSpendings));
+			} else {
+				series.getData().add(new XYChart.Data<String, Number>(DAYSOFWEEK.get(i), totalSpendings));
+			}
 		}
+		System.out.println("length = " + series.getData().size());
 		return series;
 	}
 
-    private static int GetTotalSpendings(XYChart.Series<Number, Number> serie) {
+    public static int GetTotalSpendings(XYChart.Series<String, Number> serie) {
         float res = 0;
-        for (Data<Number, Number> data : serie.getData()) {
-            res = data.getYValue().floatValue();
-        }
+        int length = serie.getData().size();
+        res = serie.getData().get(length - 1).getYValue().floatValue();
         return (int) (res * 1.1);
-
     }
 
-	public static LineChart<Number, Number> GetChartOfSpendingsDuringPeriodOfYear(int period, int periodIndex, int year)
+	public static LineChart<String, Number> GetChartOfSpendingsDuringPeriodOfYear(int period, int periodIndex, int year)
 	{
 		int size;
 		String title;
 		if (periodIndex == Calendar.MONTH) {
 			size = 31;
-			title = "Evolution des dépenses au cours du mois " + period + " de " + year;
+			title = "Evolution des dépenses en " + MONTHSMAP.get(period) + " " + year;
 		} else if (periodIndex == Calendar.WEEK_OF_YEAR || periodIndex == Calendar.WEEK_OF_MONTH) {
 			size = 7;
 			title = "Evolution des dépenses au cours de la semaine " + period + " de " + year;
@@ -288,21 +323,23 @@ public class SpendingController {
 			size = 0;
 			title = "";
 		}
-		XYChart.Series<Number, Number> serie = GetSeriesOfSpendingsDuringPeriodOfYear(period, periodIndex, year);
-		NumberAxis xAxis = new NumberAxis(0, size + 1, 1);
+		XYChart.Series<String, Number> serie = GetSeriesOfSpendingsDuringPeriodOfYear(period, periodIndex, year);
+		CategoryAxis xAxis = new CategoryAxis();
+		xAxis.setCategories(FXCollections.observableList(size == 31 ? DAYSOFMONTH : DAYSOFWEEK));
 		int totalSpendings = GetTotalSpendings(serie);
 		NumberAxis yAxis = new NumberAxis(0, totalSpendings, totalSpendings / 10);
 		xAxis.setLabel("Nombre de jours");
 		yAxis.setLabel("Dépenses");
-		LineChart<Number, Number> res = new LineChart<Number, Number>(xAxis, yAxis);
+		LineChart<String, Number> res = new LineChart<String, Number>(xAxis, yAxis);
 		res.setTitle(title);
 		res.getData().add(serie);
+		res.setLegendVisible(false);
 		return res;
 	}
     
-	public static LineChart<Number, Number> AddSpendingsDuringPeriodOfYearToLineChart(LineChart<Number, Number> lineChart, int period, int periodIndex, int year)
+	public static LineChart<String, Number> AddSpendingsDuringPeriodOfYearToLineChart(LineChart<String, Number> lineChart, int period, int periodIndex, int year)
 	{
-		XYChart.Series<Number, Number> serieToAdd = GetSeriesOfSpendingsDuringPeriodOfYear(period, periodIndex, year);
+		XYChart.Series<String, Number> serieToAdd = GetSeriesOfSpendingsDuringPeriodOfYear(period, periodIndex, year);
 		if(lineChart.getData().size() == 2) {
 			lineChart.getData().remove(1);
 		}
