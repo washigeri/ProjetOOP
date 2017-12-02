@@ -1,8 +1,11 @@
-package views;
+ package views;
 
+import controllers.SpendingController;
 import controllers.TransactionController;
 import database.DatabaseManager;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -13,6 +16,7 @@ import models.User;
 import java.sql.SQLException;
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -91,6 +95,54 @@ public class ViewHandler {
     @FXML
     protected AnchorPane Anchor_Resume_LineChart;
 
+    @FXML
+    protected Text Text_Suivi_Mensuel;
+    
+    @FXML
+    protected AnchorPane Anchor_Suivi_LineChart;
+
+    @FXML
+    protected ComboBox<IntStringPair> ComboBox_Suivi_Compare_Month;
+    
+    @FXML
+    protected ComboBox<Integer> ComboBox_Suivi_Compare_Year;
+    
+    @FXML
+    protected Button Button_Suivi_Compare;
+    
+    @FXML
+    protected AnchorPane Anchor_Suivi_Category_PieChart;
+    
+    @FXML
+    private void handleAddModifyDateToCompare() {
+    	try {
+	    	int year = ComboBox_Suivi_Compare_Year.getValue();
+	    	int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
+	    	if(year > Calendar.getInstance().get(Calendar.YEAR)  || (year == Calendar.getInstance().get(Calendar.YEAR) && month >= Calendar.getInstance().get(Calendar.MONTH)))
+	    	{
+	    		Button_Suivi_Compare.setDisable(true);
+	    	}
+	    	else {
+	    		Button_Suivi_Compare.setDisable(false);
+	    	}
+    	} catch (NullPointerException e) {
+    		System.out.println(e.getMessage());;
+    	}
+    }
+    
+    @SuppressWarnings("unchecked")
+	@FXML
+    private void handleAddPeriodToCompareToChartSuivi() {
+    	int year = ComboBox_Suivi_Compare_Year.getValue();
+    	int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
+    	XYChart.Series<Number, Number> serieToAdd = SpendingController.GetSeriesOfSpendingsDuringPeriodOfYear(month, Calendar.MONTH, year);
+    	LineChart<Number, Number> lineChart = (LineChart<Number, Number>) Anchor_Suivi_LineChart.getChildren().get(0);
+    	if(lineChart.getData().size() == 2) {
+    		lineChart.getData().remove(1);
+    	}
+    	lineChart.getData().add(serieToAdd);
+    }
+    
     @FXML
     private void handleAddTransactionButtonAction() {
         try {
