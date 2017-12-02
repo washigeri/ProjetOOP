@@ -5,6 +5,7 @@ import models.Category;
 import models.Spending;
 import models.Transaction;
 import models.User;
+import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
@@ -93,49 +94,44 @@ public class TransactionController {
 
     @SuppressWarnings("unchecked")
     public static Map<String, Float> Get5BiggestSpendingByCategory() {
-        try {
-            HashMap<String, Float> sumMap = new HashMap<>();
-            HashMap<String, Float> res = new HashMap<>();
-            ArrayList<Spending> spendings = (ArrayList<Spending>) databaseManager.SelectAll(Spending.class);
-            HashMap<String, List<Spending>> hashMap = new HashMap<>();
-            for (Spending spending :
-                    spendings) {
-                if (!hashMap.containsKey(spending.getCategory().getName())) {
-                    List<Spending> listValue = new ArrayList<>();
-                    listValue.add(spending);
-                    hashMap.put(spending.getCategory().getName(), listValue);
-                } else {
-                    hashMap.get(spending.getCategory().getName()).add(spending);
-                }
+        HashMap<String, Float> sumMap = new HashMap<>();
+        HashMap<String, Float> res = new HashMap<>();
+        ArrayList<Spending> spendings = (ArrayList<Spending>) TransactionController.GetPreviousSpendings();
+        HashMap<String, List<Spending>> hashMap = new HashMap<>();
+        for (Spending spending :
+                spendings) {
+            if (!hashMap.containsKey(spending.getCategory().getName())) {
+                List<Spending> listValue = new ArrayList<>();
+                listValue.add(spending);
+                hashMap.put(spending.getCategory().getName(), listValue);
+            } else {
+                hashMap.get(spending.getCategory().getName()).add(spending);
             }
-            for (String key :
-                    hashMap.keySet()) {
-                float sum = (float) hashMap.get(key).stream().mapToDouble(Spending::getAmount).sum();
-                sumMap.put(key, sum);
-            }
-            Map<String, Float> sortedMap = sumMap.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
-                    .collect(Collectors.
-                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-            int k = 0;
-            for (Map.Entry<String, Float> entry :
-                    sortedMap.entrySet()) {
-                if (k < 5) {
-                    res.put(entry.getKey(), entry.getValue());
-                    k++;
-                } else
-                    break;
-            }
-
-            return res.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
-                    .collect(Collectors
-                            .toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new HashMap<>(5);
         }
+        for (String key :
+                hashMap.keySet()) {
+            float sum = (float) hashMap.get(key).stream().mapToDouble(Spending::getAmount).sum();
+            sumMap.put(key, sum);
+        }
+        Map<String, Float> sortedMap = sumMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                .collect(Collectors.
+                        toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        int k = 0;
+        for (Map.Entry<String, Float> entry :
+                sortedMap.entrySet()) {
+            if (k < 5) {
+                res.put(entry.getKey(), entry.getValue());
+                k++;
+            } else
+                break;
+        }
+
+        return res.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                .collect(Collectors
+                        .toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     @SuppressWarnings("unchecked")
@@ -158,8 +154,9 @@ public class TransactionController {
         try {
             ArrayList<Transaction> transactions = (ArrayList<Transaction>) databaseManager.SelectAll(Transaction.class);
             return transactions.stream()
-                    .filter(p -> p.getEndDate().after(new Date()))
-                    .sorted(Comparator.comparing(Transaction::getEndDate).reversed())
+                    .filter(p -> (p.getEndDate().after(new Date())) ||
+                            (DateUtils.isSameDay(p.getEndDate(), new Date())))
+                    .sorted(Comparator.comparing(Transaction::getCreationDate).reversed())
                     .collect(Collectors.toList());
         } catch (SQLException e) {
             e.printStackTrace();

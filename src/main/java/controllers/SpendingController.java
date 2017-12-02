@@ -11,17 +11,13 @@ import models.Category;
 import models.Spending;
 import utils.IntStringPair;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SpendingController {
 
     public static final long MILLISINADAY = 86400000;
     private static IDatabaseManager databaseManager = DatabaseManager.getInstance();
-    public static final List<String> DAYSOFWEEK = new ArrayList<String>() 
+    public static final List<String> DAYSOFWEEK = new ArrayList<String>()
     {{
     	add("Lundi");
     	add("Mardi");
@@ -52,7 +48,7 @@ public class SpendingController {
     	add(new IntStringPair(10, "Novembre"));
     	add(new IntStringPair(11, "Décembre"));
     }};
-    
+
     @SuppressWarnings("unchecked")
     public static List<Spending> GetSpendingsOverTheLastDays(int numberOfDays) {
         List<Spending> res = new ArrayList<Spending>();
@@ -129,13 +125,13 @@ public class SpendingController {
             for (Spending spending : allSpendings) {
                 c.setTime(spending.getDate());
                 if (today.get(Calendar.YEAR) == c.get(Calendar.YEAR)) {
-                    if (today.get(Calendar.MONTH) - c.get(Calendar.MONTH) <= numberOfMonths && today.compareTo(c)>0) {
+                    if (today.get(Calendar.MONTH) - c.get(Calendar.MONTH) <= numberOfMonths && today.compareTo(c) > 0) {
                         res.add(spending);
                     }
                 } else if (today.get(Calendar.YEAR) > c.get(Calendar.YEAR)) {
                     if (today.get(Calendar.MONTH) + 12 * (today.get(Calendar.YEAR) - c.get(Calendar.YEAR))
                             - c.get(Calendar.MONTH) <= numberOfMonths) {
-                    	res.add(spending);
+                        res.add(spending);
                     }
                 }
             }
@@ -165,23 +161,22 @@ public class SpendingController {
     }
 
     @SuppressWarnings("unchecked")
-	public static HashMap<Integer, Float> GetSpendingsByCategoryDuringPeriodOfYear(int period, int periodIndex, int year){
-    	HashMap<Integer, Float> res = new HashMap<Integer, Float>();
-    	try {
-    		List<Category> allCategories = TransactionController.GetAllCategories();
-    		for(Category category : allCategories) {
-    			res.put(category.getId(), 0f);
-    		}
-			List<Spending> allSpendings = (List<Spending>) databaseManager.SelectAll(Spending.class);
-			Calendar spendingCal = Calendar.getInstance();
+    public static HashMap<Integer, Float> GetSpendingsByCategoryDuringPeriodOfYear(int period, int periodIndex, int year) {
+        HashMap<Integer, Float> res = new HashMap<Integer, Float>();
+        try {
+            List<Category> allCategories = TransactionController.GetAllCategories();
+            for (Category category : allCategories) {
+                res.put(category.getId(), 0f);
+            }
+            List<Spending> allSpendings = (List<Spending>) databaseManager.SelectAll(Spending.class);
+            Calendar spendingCal = Calendar.getInstance();
             spendingCal.setTime(new Date());
             int currentYear = spendingCal.get(Calendar.YEAR);
             int currentPeriod = (periodIndex == Calendar.MONTH) ? spendingCal.get(Calendar.MONTH)
                     : spendingCal.get(Calendar.WEEK_OF_YEAR);
             boolean isCurrentPeriod = (currentYear == year && currentPeriod == period);
-            for(Spending spending : allSpendings)
-            {
-            	spendingCal.setTime(spending.getDate());
+            for (Spending spending : allSpendings) {
+                spendingCal.setTime(spending.getDate());
                 if (spendingCal.get(Calendar.YEAR) == year && spendingCal.get(periodIndex) == period) {
                     if (!isCurrentPeriod) {
                         res.put(spending.getCategory().getId(), res.get(spending.getCategory().getId()) + spending.getAmount());
@@ -192,14 +187,14 @@ public class SpendingController {
                     }
                 }
             }
-            
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-    	return res;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
-    
-    
+
+
     public static float GetAmountSpentOverTheLastDays(int numberOfDays) {
         float res = 0f;
         List<Spending> allSpendings = GetSpendingsOverTheLastDays(numberOfDays);
@@ -336,7 +331,7 @@ public class SpendingController {
 		res.setLegendVisible(false);
 		return res;
 	}
-    
+
 	public static LineChart<String, Number> AddSpendingsDuringPeriodOfYearToLineChart(LineChart<String, Number> lineChart, int period, int periodIndex, int year)
 	{
 		XYChart.Series<String, Number> serieToAdd = GetSeriesOfSpendingsDuringPeriodOfYear(period, periodIndex, year);

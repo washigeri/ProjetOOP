@@ -1,5 +1,24 @@
- package views;
+package views;
 
+import controllers.SpendingController;
+import controllers.ThreshController;
+import controllers.TransactionController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Side;
+import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import models.Category;
+import models.Spending;
+import models.Transaction;
  import controllers.SpendingController;
  import controllers.TransactionController;
 import database.DatabaseManager;
@@ -22,20 +41,20 @@ import utils.IntStringPair;
 import java.sql.SQLException;
 import java.time.ZoneId;
  import java.util.*;
+import java.time.ZoneId;
+import java.util.*;
 
 public class TabHandler {
 
     public static ViewHandler viewHandler;
 
-    public static void RefreshTab(Tab selectedTab) {
+    static void RefreshTab(Tab selectedTab) {
         TabHandler.ExecuteCorrespondingTabLoad(selectedTab);
     }
 
     public static void TabChangeHandler() {
         viewHandler.tabPane.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    TabHandler.ExecuteCorrespondingTabLoad(newValue);
-                }
+                (observable, oldValue, newValue) -> TabHandler.ExecuteCorrespondingTabLoad(newValue)
         );
     }
 
@@ -56,6 +75,7 @@ public class TabHandler {
         }
     }
 
+
     private static void LoadAddTransactionTab() {
         viewHandler.ChoiceBox_AddTransaction_Categorie.getItems().clear();
         ArrayList<Category> categories = (ArrayList<Category>) TransactionController.GetAllCategories();
@@ -74,11 +94,39 @@ public class TabHandler {
         ArrayList<Transaction> transactions = (ArrayList<Transaction>) TransactionController.GetAllActiveTransactions();
         ListView<HBox> listView = viewHandler.TransactionList;
         listView.getItems().clear();
+        Alert alertDeleteConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        alertDeleteConfirmation.setTitle("Confirmation de suppression");
+        alertDeleteConfirmation.setHeaderText(null);
+        alertDeleteConfirmation.setContentText("Voulez-vous vraiment\nsupprimer cette transaction ?");
+        ButtonType buttonYes = new ButtonType("Oui");
+        ButtonType buttonNo = new ButtonType("Non");
+        alertDeleteConfirmation.getButtonTypes().setAll(buttonYes, buttonNo);
+        Alert alertDeleteSuccess = new Alert(Alert.AlertType.INFORMATION);
+        alertDeleteSuccess.setTitle("Information");
+        alertDeleteSuccess.setHeaderText(null);
+        alertDeleteSuccess.setContentText("Suppression réussie");
+        Alert alertDeleteFailure = new Alert(Alert.AlertType.ERROR);
+        alertDeleteFailure.setTitle("Erreur");
+        alertDeleteFailure.setHeaderText(null);
+        alertDeleteFailure.setContentText("Une erreur est survenue lors de la suppression");
         for (Transaction transaction :
                 transactions) {
-            Text text = new Text(transaction.toString());
+            Text text = new Text(transaction.toString2());
             Button button = new Button("Supprimer");
-            button.setOnAction(event -> TransactionController.DeleteTransaction(transaction.getId()));
+            button.setOnAction(event -> {
+                Optional<ButtonType> result = alertDeleteConfirmation.showAndWait();
+                boolean res;
+                if (result.isPresent() && result.get() == buttonYes) {
+                    res = TransactionController.DeleteTransaction(transaction.getId());
+                    RefreshTab(viewHandler.tabPane.getSelectionModel().getSelectedItem());
+                    if (res)
+                        alertDeleteSuccess.showAndWait();
+                    else
+                        alertDeleteFailure.showAndWait();
+                } else if (result.isPresent() && result.get() == buttonNo)
+                    RefreshTab(viewHandler.tabPane.getSelectionModel().getSelectedItem());
+
+            });
             HBox hBox = new HBox();
             hBox.getChildren().addAll(text, button);
             listView.getItems().add(hBox);
@@ -86,12 +134,29 @@ public class TabHandler {
     }
 
     public static void Start() {
+        viewHandler.updateThreshValueInMenu();
         LoadSummaryTab();
     }
 
+    private static void SetThreshDisplay() {
+        viewHandler.Text_Resume_Seuil.setText("$" + String.format("%.2f", ThreshController.getThresh()));
+        Rectangle rectangle = viewHandler.Rectangle_Resume_Seuil;
+        float spending = SpendingController.GetAmountSpentOverTheLastMonth();
+        float thresh = ThreshController.getThresh();
+        float percent = (spending / thresh) * 100f;
+        if (percent >= 75 && percent < 100) {
+            rectangle.fillProperty().setValue(Color.ORANGE);
+        } else if (percent >= 100) {
+            rectangle.fillProperty().setValue(Color.RED);
+        } else {
+            rectangle.fillProperty().setValue(Color.GREEN);
+        }
+    }
+
     private static void LoadSummaryTab() {
-        viewHandler.Text_Resume_Hebdo.setText("$ " + SpendingController.GetAmountSpentOverTheLastWeek());
-        viewHandler.Text_Resume_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
+        TabHandler.SetThreshDisplay();
+        viewHandler.Text_Resume_Hebdo.setText("$" + SpendingController.GetAmountSpentOverTheLastWeek());
+        viewHandler.Text_Resume_Mensuel.setText("$" + SpendingController.GetAmountSpentOverTheLastMonth());
         viewHandler.Anchor_Resume_LineChart.getChildren().clear();
         LineChart<String, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
         x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
