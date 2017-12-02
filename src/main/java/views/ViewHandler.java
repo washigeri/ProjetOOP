@@ -4,6 +4,7 @@ import controllers.TransactionController;
 import database.DatabaseManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import models.Category;
 import models.User;
@@ -51,7 +52,7 @@ public class ViewHandler {
 
     @FXML
     protected Text Text_Resume_Mensuel;
-    
+
 
     @FXML
     protected Text Text_Hebdo_Current;
@@ -68,10 +69,10 @@ public class ViewHandler {
 
 
     @FXML
-    protected ListView ListView_Transactions;
+    protected ListView<Text> ListView_Transactions;
 
     @FXML
-    protected Accordion Accordion_Top5;
+    protected VBox VBox_Top5;
 
     @FXML
     protected ScrollPane ScrollPane_Mensuel;

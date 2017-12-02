@@ -4,12 +4,23 @@ import controllers.Controller;
 import controllers.TransactionController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import models.Category;
+import models.Spending;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TabHandler {
 
@@ -39,7 +50,7 @@ public class TabHandler {
                                 break;
                             case "Tab_Historique":
                                 System.out.println("Historique");
-
+                                TabHandler.LoadHistoryTab();
                                 break;
                         }
                     }
@@ -60,14 +71,41 @@ public class TabHandler {
         viewHandler.DatePicker_AddTransaction_Start.setValue(new Date()
                 .toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
+        viewHandler.ChoiceBox_AddTransaction_Repetition.getItems().clear();
         viewHandler.ChoiceBox_AddTransaction_Repetition.getItems().addAll("Jours", "Semaines");
         viewHandler.ChoiceBox_AddTransaction_Repetition.getSelectionModel().selectFirst();
     }
-    
+
     private static void LoadSummaryTab() {
-    	viewHandler.Text_Resume_Hebdo.setText("" + Controller.GetAmountSpentOverTheLastWeek() + " $");
-    	viewHandler.Text_Resume_Mensuel.setText("" + Controller.GetAmountSpentOverTheLastMonth() + " $");
+        viewHandler.Text_Resume_Hebdo.setText("" + Controller.GetAmountSpentOverTheLastWeek() + " $");
+        viewHandler.Text_Resume_Mensuel.setText("" + Controller.GetAmountSpentOverTheLastMonth() + " $");
     }
+
+    private static void LoadHistoryTab() {
+        HashMap<String, Float> values = (HashMap<String, Float>) TransactionController.Get5BiggestSpendingByCategory();
+        VBox vBox = viewHandler.VBox_Top5;
+        ObservableList<Node> titledPanes = vBox.getChildren();
+        titledPanes.clear();
+        if (values.size() == 5) {
+            for (Map.Entry<String, Float> entry :
+                    values.entrySet()) {
+                TitledPane titledPane = new TitledPane(entry.getKey(), new Label("$" +
+                        String.format("%.2f", entry.getValue())));
+                titledPanes.add(titledPane);
+            }
+        }
+        ListView<Text> listView = viewHandler.ListView_Transactions;
+        ArrayList<Spending> spendings = (ArrayList<Spending>) TransactionController.GetPreviousSpendings();
+        listView.getItems().clear();
+        for (Spending spending :
+                spendings) {
+            Text text = new Text();
+            text.setText(spending.toString());
+            text.textAlignmentProperty().setValue(TextAlignment.CENTER);
+            listView.getItems().add(text);
+        }
+    }
+
 
 }
 

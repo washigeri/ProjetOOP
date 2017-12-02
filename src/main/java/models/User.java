@@ -43,7 +43,7 @@ public class User extends Model {
         List<Object> res = new ArrayList<>();
         res.add(getId());
         res.add(getUsername());
-        res.add(getPassword());
+        res.add(this.password);
         return res;
     }
 }

@@ -18,8 +18,8 @@
                                 <AnchorPane id="AnchorPane_Tab_Resume_Main" minHeight="0.0" minWidth="0.0"
                                             prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                        <ScrollPane id="ScrollPane_Resume" fx:id="ScrollPane_Resume" hbarPolicy="ALWAYS"
-                                                    layoutX="40.0" layoutY="549.0" prefHeight="136.0" prefWidth="1190.0"
+                                        <ScrollPane id="ScrollPane_Resume" fx:id="ScrollPane_Resume" layoutX="40.0"
+                                                    layoutY="549.0" prefHeight="136.0" prefWidth="1190.0"
                                                     vbarPolicy="NEVER" AnchorPane.bottomAnchor="10.0"
                                                     AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
                                             <content>
@@ -337,27 +337,14 @@
                                                     prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0"
                                                     AnchorPane.topAnchor="60.0">
                                             <children>
-                                                <Accordion id="Accordion_Top5" fx:id="Accordion_Top5" layoutX="13.0"
-                                                           layoutY="40.0" prefHeight="156.0" prefWidth="390.0"
-                                                           AnchorPane.leftAnchor="13.0" AnchorPane.topAnchor="40.0">
-                                                    <panes>
-                                                        <TitledPane animated="false" text="untitled 1"/>
-                                                        <TitledPane animated="false" text="untitled 2"/>
-                                                        <TitledPane animated="false" layoutX="10.0" layoutY="10.0"
-                                                                    text="untitled 1"/>
-                                                        <TitledPane animated="false" layoutX="10.0" layoutY="35.0"
-                                                                    text="untitled 2"/>
-                                                        <TitledPane animated="false" layoutX="10.0" layoutY="85.0"
-                                                                    prefHeight="12.0" prefWidth="390.0"
-                                                                    text="untitled 2"/>
-                                                    </panes>
-                                                </Accordion>
-                                                <Label alignment="CENTER" layoutX="144.0" layoutY="1.0"
-                                                       text="Top 5 Depenses" textAlignment="CENTER">
+                                                <Label alignment="CENTER" layoutX="122.0" text="Top 5 Depenses"
+                                                       textAlignment="CENTER">
                                                     <font>
                                                         <Font size="18.0"/>
                                                     </font>
                                                 </Label>
+                                                <VBox fx:id="VBox_Top5" layoutX="14.0" layoutY="41.0" prefHeight="159.0"
+                                                      prefWidth="343.0"/>
                                             </children>
                                         </AnchorPane>
                                         <AnchorPane id="AnchorPane_Historique_ListeTransactions" layoutX="440.0"
@@ -372,8 +359,8 @@
                                                           AnchorPane.topAnchor="0.0"/>
                                             </children>
                                         </AnchorPane>
-                           </children>
-                        </AnchorPane>
+                                    </children>
+                                </AnchorPane>
                             </content>
                         </Tab>
                     </tabs>
