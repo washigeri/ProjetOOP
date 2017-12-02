@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="720.0" prefWidth="1280.0"
-            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="views.ViewHandler">
-    <content>
-        <AnchorPane id="AnchorPane_Main" fx:id="AnchorPane_Main">
-            <children>
-                <TabPane id="TabPane_Main" fx:id="tabPane" layoutX="14.0" layoutY="14.0" prefHeight="720.0"
-                         prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
-                         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<VBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+      minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.141"
+      fx:controller="views.ViewHandler">
+    <children>
+        <MenuBar>
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="ALWAYS" prefHeight="798.0" prefWidth="1280.0"
+                    vbarPolicy="ALWAYS">
+            <VBox.margin>
+                <Insets/>
+            </VBox.margin>
+            <content>
+                <TabPane id="TabPane_Main" fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab id="Tab_Resume" closable="false" text="Resume">
                             <content>
@@ -21,14 +45,15 @@
                                         <ScrollPane id="ScrollPane_Resume" fx:id="ScrollPane_Resume" layoutX="40.0"
                                                     layoutY="549.0" prefHeight="136.0" prefWidth="1190.0"
                                                     vbarPolicy="NEVER" AnchorPane.bottomAnchor="10.0"
-                                                    AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
+                                                    AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0"
+                                                    AnchorPane.topAnchor="505.0">
                                             <content>
                                                 <AnchorPane/>
                                             </content>
                                         </ScrollPane>
-                                        <AnchorPane id="AnchorPane_Resume_Hebdo" layoutX="40.0" layoutY="59.0"
+                                        <AnchorPane id="AnchorPane_Resume_Hebdo" layoutX="60.0" layoutY="168.0"
                                                     prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0"
-                                                    AnchorPane.topAnchor="200.0">
+                                                    AnchorPane.topAnchor="168.0">
                                             <children>
                                                 <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d6e58e" height="110.0"
                                                            layoutY="45.0" stroke="BLACK" strokeType="INSIDE"
@@ -48,9 +73,9 @@
                                                 </Text>
                                             </children>
                                         </AnchorPane>
-                                        <AnchorPane id="AnchorPane_Resume_Mensuel" layoutX="38.0" layoutY="346.0"
-                                                    prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0"
-                                                    AnchorPane.topAnchor="350.0">
+                                        <AnchorPane id="AnchorPane_Resume_Mensuel" layoutX="67.0" layoutY="326.0"
+                                                    prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="67.0"
+                                                    AnchorPane.topAnchor="326.0">
                                             <children>
                                                 <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8df29a" height="110.0"
                                                            layoutY="55.0" stroke="BLACK" strokeType="INSIDE"
@@ -70,9 +95,9 @@
                                                 </Label>
                                             </children>
                                         </AnchorPane>
-                                        <AnchorPane id="AnchorPane_Resume_Seuil" layoutX="60.0" layoutY="14.0"
-                                                    prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="60.0"
-                                                    AnchorPane.topAnchor="30.0">
+                                        <AnchorPane id="AnchorPane_Resume_Seuil" layoutX="59.0" layoutY="4.0"
+                                                    prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="447.0"
+                                                    AnchorPane.leftAnchor="59.0" AnchorPane.topAnchor="4.0">
                                             <children>
                                                 <Rectangle id="Rectangle_Resume_Seuil" fx:id="Rectangle_Resume_Seuil"
                                                            arcHeight="5.0" arcWidth="5.0" fill="#9acae4" height="110.0"
@@ -365,7 +390,7 @@
                         </Tab>
                     </tabs>
                 </TabPane>
-            </children>
-        </AnchorPane>
-    </content>
-</ScrollPane>
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>

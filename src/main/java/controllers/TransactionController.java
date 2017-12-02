@@ -21,7 +21,7 @@ public class TransactionController {
             return (List<Category>) databaseManager.SelectAll(Category.class);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 

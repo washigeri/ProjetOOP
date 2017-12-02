@@ -2,13 +2,10 @@ package views;
 
 import controllers.Controller;
 import controllers.TransactionController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -28,31 +25,28 @@ public class TabHandler {
 
     public static void TabChangeHandler() {
         viewHandler.tabPane.getSelectionModel().selectedItemProperty().addListener(
-                new ChangeListener<Tab>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-                        switch (newValue.getId()) {
-                            case "Tab_Resume":
-                                System.out.println("Resume");
-                                TabHandler.LoadSummaryTab();
-                                break;
-                            case "Tab_AddTransaction":
-                                System.out.println("Transaction");
-                                TabHandler.LoadAddTransactionTab();
-                                break;
-                            case "Tab_Hebdo":
-                                System.out.println("Hebo");
+                (observable, oldValue, newValue) -> {
+                    switch (newValue.getId()) {
+                        case "Tab_Resume":
+                            System.out.println("Resume");
+                            TabHandler.LoadSummaryTab();
+                            break;
+                        case "Tab_AddTransaction":
+                            System.out.println("Transaction");
+                            TabHandler.LoadAddTransactionTab();
+                            break;
+                        case "Tab_Hebdo":
+                            System.out.println("Hebo");
 
-                                break;
-                            case "Tab_Mensuel":
-                                System.out.println("Mensuel");
+                            break;
+                        case "Tab_Mensuel":
+                            System.out.println("Mensuel");
 
-                                break;
-                            case "Tab_Historique":
-                                System.out.println("Historique");
-                                TabHandler.LoadHistoryTab();
-                                break;
-                        }
+                            break;
+                        case "Tab_Historique":
+                            System.out.println("Historique");
+                            TabHandler.LoadHistoryTab();
+                            break;
                     }
                 }
         );
@@ -113,12 +107,12 @@ class IntStringPair {
     private final Integer key;
     private final String value;
 
-    public IntStringPair(Integer key, String value) {
+    IntStringPair(Integer key, String value) {
         this.key = key;
         this.value = value;
     }
 
-    public int getKey() {
+    int getKey() {
         return key;
     }
 
