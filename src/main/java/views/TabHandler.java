@@ -8,6 +8,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -17,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import models.Category;
 import models.Spending;
+import models.Transaction;
 
 import java.time.ZoneId;
 import java.util.*;
@@ -24,6 +27,10 @@ import java.util.*;
 public class TabHandler {
 
     public static ViewHandler viewHandler;
+
+    public static void RefreshTab(Tab selectedTab) {
+        TabHandler.ExecuteCorrespondingTabLoad(selectedTab);
+    }
 
     public static void TabChangeHandler() {
         viewHandler.tabPane.getSelectionModel().selectedItemProperty().addListener(
@@ -44,9 +51,29 @@ public class TabHandler {
                     }
                 }
         );
+                    TabHandler.ExecuteCorrespondingTabLoad(newValue);
+                }
+        );
     }
 
-    //TODO: Arranger le tab du formulaire
+    private static void ExecuteCorrespondingTabLoad(Tab selectedTab) {
+        switch (selectedTab.getId()) {
+            case "Tab_Resume":
+                TabHandler.LoadSummaryTab();
+                break;
+            case "Tab_AddTransaction":
+                TabHandler.LoadAddTransactionTab();
+                break;
+            case "Tab_Hebdo":
+                break;
+            case "Tab_Mensuel":
+                break;
+            case "Tab_Historique":
+                TabHandler.LoadHistoryTab();
+                break;
+        }
+    }
+
     private static void LoadAddTransactionTab() {
         viewHandler.ChoiceBox_AddTransaction_Categorie.getItems().clear();
         ArrayList<Category> categories = (ArrayList<Category>) TransactionController.GetAllCategories();
@@ -62,6 +89,18 @@ public class TabHandler {
         viewHandler.ChoiceBox_AddTransaction_Repetition.getItems().clear();
         viewHandler.ChoiceBox_AddTransaction_Repetition.getItems().addAll("Jours", "Semaines");
         viewHandler.ChoiceBox_AddTransaction_Repetition.getSelectionModel().selectFirst();
+        ArrayList<Transaction> transactions = (ArrayList<Transaction>) TransactionController.GetAllActiveTransactions();
+        ListView<HBox> listView = viewHandler.TransactionList;
+        listView.getItems().clear();
+        for (Transaction transaction :
+                transactions) {
+            Text text = new Text(transaction.toString());
+            Button button = new Button("Supprimer");
+            button.setOnAction(event -> TransactionController.DeleteTransaction(transaction.getId()));
+            HBox hBox = new HBox();
+            hBox.getChildren().addAll(text, button);
+            listView.getItems().add(hBox);
+        }
     }
 
     public static void Start() {
@@ -93,17 +132,17 @@ public class TabHandler {
     	}
     	List<IntStringPair> months = new ArrayList<IntStringPair>();
     	months.add(new IntStringPair(0, "Janvier"));
-    	months.add(new IntStringPair(1, "Février"));
+    	months.add(new IntStringPair(1, "Fï¿½vrier"));
     	months.add(new IntStringPair(2, "Mars"));
     	months.add(new IntStringPair(3, "Avril"));
     	months.add(new IntStringPair(4, "Mai"));
     	months.add(new IntStringPair(5, "Juin"));
     	months.add(new IntStringPair(6, "Juillet"));
-    	months.add(new IntStringPair(7, "Août"));
+    	months.add(new IntStringPair(7, "Aoï¿½t"));
     	months.add(new IntStringPair(8, "Septembre"));
     	months.add(new IntStringPair(9, "Octobre"));
     	months.add(new IntStringPair(10, "Novembre"));
-    	months.add(new IntStringPair(11, "Décembre"));
+    	months.add(new IntStringPair(11, "Dï¿½cembre"));
     	viewHandler.ComboBox_Suivi_Compare_Year.getItems().clear();
     	viewHandler.ComboBox_Suivi_Compare_Year.getItems().addAll(yearsFrom1970);
     	viewHandler.ComboBox_Suivi_Compare_Month.getItems().clear();
@@ -132,7 +171,7 @@ public class TabHandler {
     	viewHandler.Anchor_Suivi_Category_PieChart.getChildren().clear();
     	viewHandler.Anchor_Suivi_Category_PieChart.getChildren().add(pieChart);
     }
-    
+
     private static void LoadHistoryTab() {
         HashMap<String, Float> values = (HashMap<String, Float>) TransactionController.Get5BiggestSpendingByCategory();
         VBox vBox = viewHandler.VBox_Top5;
@@ -145,7 +184,8 @@ public class TabHandler {
                         String.format("%.2f", entry.getValue())));
                 titledPanes.add(titledPane);
             }
-            
+            for (int i = 0; i < 5 - values.size(); i++)
+                titledPanes.add(new TitledPane());
         }
         ListView<Text> listView = viewHandler.ListView_Transactions;
         ArrayList<Spending> spendings = (ArrayList<Spending>) TransactionController.GetPreviousSpendings();

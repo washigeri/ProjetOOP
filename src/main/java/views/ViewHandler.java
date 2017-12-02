@@ -3,11 +3,13 @@
 import controllers.SpendingController;
 import controllers.TransactionController;
 import database.DatabaseManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import models.Category;
@@ -96,23 +98,29 @@ public class ViewHandler {
     protected AnchorPane Anchor_Resume_LineChart;
 
     @FXML
+    protected Label Label_Repetition;
+
+    @FXML
+    protected ListView<HBox> TransactionList;
+
+    @FXML
     protected Text Text_Suivi_Mensuel;
-    
+
     @FXML
     protected AnchorPane Anchor_Suivi_LineChart;
 
     @FXML
     protected ComboBox<IntStringPair> ComboBox_Suivi_Compare_Month;
-    
+
     @FXML
     protected ComboBox<Integer> ComboBox_Suivi_Compare_Year;
-    
+
     @FXML
     protected Button Button_Suivi_Compare;
-    
+
     @FXML
     protected AnchorPane Anchor_Suivi_Category_PieChart;
-    
+
     @FXML
     private void handleAddModifyDateToCompare() {
     	try {
@@ -129,7 +137,7 @@ public class ViewHandler {
     		System.out.println(e.getMessage());;
     	}
     }
-    
+
     @SuppressWarnings("unchecked")
 	@FXML
     private void handleAddPeriodToCompareToChartSuivi() {
@@ -142,7 +150,7 @@ public class ViewHandler {
     	}
     	lineChart.getData().add(serieToAdd);
     }
-    
+
     @FXML
     private void handleAddTransactionButtonAction() {
         try {
@@ -182,6 +190,7 @@ public class ViewHandler {
                                 endDate.atStartOfDay(ZoneId.systemDefault())
                         )));
             }
+            handleOnMenuRefresh();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -218,10 +227,24 @@ public class ViewHandler {
         if (date.isAfter(this.DatePicker_AddTransaction_Start.getValue())) {
             this.TextField_AddTransaction_Repetition.disableProperty().setValue(false);
             this.ChoiceBox_AddTransaction_Repetition.disableProperty().setValue(false);
+            this.Label_Repetition.disableProperty().setValue(false);
         } else {
             this.TextField_AddTransaction_Repetition.disableProperty().setValue(true);
             this.ChoiceBox_AddTransaction_Repetition.disableProperty().setValue(true);
+            this.Label_Repetition.disableProperty().setValue(true);
 
         }
+    }
+
+    @FXML
+    private void handleOnMenuExit() {
+        Platform.exit();
+    }
+
+    @FXML
+    private void handleOnMenuRefresh() {
+        Tab selectedTab = this.tabPane.getSelectionModel().getSelectedItem();
+        if (selectedTab != null)
+            TabHandler.RefreshTab(selectedTab);
     }
 }

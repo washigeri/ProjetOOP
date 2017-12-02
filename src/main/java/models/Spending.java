@@ -42,7 +42,7 @@ public class Spending extends Model {
     public String toString() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
         String res = "  ";
-        res += String.format("%.2f", this.getAmount());
+        res += String.format("$%.2f", this.getAmount());
         res += " -- ";
         if (this.getDescription() != null && !Objects.equals(this.getDescription(), "")) {
             res += StringUtils.abbreviate(this.getDescription(), 15);
