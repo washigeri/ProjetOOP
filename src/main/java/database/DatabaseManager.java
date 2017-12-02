@@ -33,6 +33,8 @@ public class DatabaseManager implements IDatabaseManager {
         this.setMetaData(null);
         this.ConnectDatabase();
         this.CreateTables();
+        this.SeedDataBase();
+
     }
 
     public static DatabaseManager getInstance() {
@@ -93,6 +95,37 @@ public class DatabaseManager implements IDatabaseManager {
                 ");";
         try {
             this.ExecuteCreateDropQueries(sqlQueries);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void SeedDataBase() {
+        final String[] names = {"Vie quotidienne", "Loisirs", "Habitation", "Transports", "Santé"};
+        final User userDB = new User(1, "guest", "guest_pwd");
+        try {
+            int categorySize = this.SelectAll(Category.class).size();
+            if (categorySize == 0) {
+                for (String name :
+                        names) {
+                    Category category = new Category(this.GetLastID(Category.class), name);
+                    this.Insert(category);
+                }
+            }
+            ArrayList<User> users = (ArrayList<User>) this.SelectAll(User.class);
+            int userSize = users.size();
+            if (userSize > 1) {
+                for (User user :
+                        users) {
+                    this.Delete(User.class, user.getId());
+                }
+                this.Insert(userDB);
+            } else if (userSize == 0) {
+                this.Insert(userDB);
+            }
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -296,7 +329,7 @@ public class DatabaseManager implements IDatabaseManager {
 
                 try {
                     result = new Transaction(rs.getInt("id"), (User) this.Select(User.class, rs.getInt("username_id")),
-                            rs.getString("description"), rs.getFloat("amount"), df.parse(rs.getString("creation_date")),
+                            rs.getString("description"), Math.round(rs.getFloat("amount") * 100f) / 100f, df.parse(rs.getString("creation_date")),
                             df.parse(rs.getString("start_date")),
                             df.parse(rs.getString("end_date")), rs.getInt("frequency"), (Category) this.Select(Category.class, rs.getInt("category_id")));
                 } catch (ParseException e) {
@@ -304,7 +337,7 @@ public class DatabaseManager implements IDatabaseManager {
                 }
             } else if (object == Spending.class) {
                 try {
-                    result = new Spending(rs.getInt("id"), rs.getFloat("amount"),
+                    result = new Spending(rs.getInt("id"), Math.round(rs.getFloat("amount") * 100f) / 100f,
                             rs.getString("description"), df.parse(rs.getString("date")),
                             (Category) this.Select(Category.class, rs.getInt("category_id")),
                             (Transaction) this.Select(Transaction.class, rs.getInt("operation_id")));

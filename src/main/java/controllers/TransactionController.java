@@ -16,12 +16,12 @@ public class TransactionController {
     private static DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     @SuppressWarnings("unchecked")
-	public static List<Category> GetAllCategories() {
+    public static List<Category> GetAllCategories() {
         try {
             return (List<Category>) databaseManager.SelectAll(Category.class);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -36,7 +36,7 @@ public class TransactionController {
                 int inBetweenDays = Days.daysBetween(new DateTime(startDate), new DateTime(endDate)).getDays();
                 DateTime startDateJ = new DateTime(startDate);
                 for (int i = 0; i < inBetweenDays; i += frequency) {
-                    DateTime newDate = startDateJ.plusDays(i * frequency);
+                    DateTime newDate = startDateJ.plusDays(i);
                     TransactionController.CreateNewSpending(transaction.getAmount(), transaction.getCategory(), newDate.toDate(),
                             transaction.getDescription()
                             , transaction);
@@ -44,7 +44,7 @@ public class TransactionController {
                 return true;
             } else {
                 TransactionController.CreateNewSpending(transaction.getAmount(), transaction.getCategory(),
-                        transaction.getCreationDate(), transaction.getDescription(), transaction);
+                        startDate, transaction.getDescription(), transaction);
                 return true;
             }
 
@@ -138,10 +138,19 @@ public class TransactionController {
         }
     }
 
-    public static void main(String[] args) {
-
-        Map<String, Float> res = TransactionController.Get5BiggestSpendingByCategory();
-        System.out.println(res);
+    @SuppressWarnings("unchecked")
+    public static List<Spending> GetPreviousSpendings() {
+        try {
+            ArrayList<Spending> spendings = (ArrayList<Spending>)
+                    DatabaseManager.getInstance().SelectAll(Spending.class);
+            return spendings.stream()
+                    .filter(p -> p.getDate().before(new Date()))
+                    .sorted(Comparator.comparing(Spending::getDate).reversed())
+                    .collect(Collectors.toList());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 }
