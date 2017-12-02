@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import models.Category;
 import models.User;
@@ -56,12 +57,6 @@ public class ViewHandler {
     @FXML
     protected Text Text_Resume_Mensuel;
 
-    @FXML
-    protected Text Text_Monthly_Current;
-
-    @FXML
-    protected Text Text_Monthly_Past;
-
 
     @FXML
     protected ListView<Text> ListView_Transactions;
@@ -69,8 +64,6 @@ public class ViewHandler {
     @FXML
     protected VBox VBox_Top5;
 
-    @FXML
-    protected ScrollPane ScrollPane_Mensuel;
 
     @FXML
     protected ChoiceBox<String> ChoiceBox_AddTransaction_Repetition;
@@ -117,7 +110,10 @@ public class ViewHandler {
     @FXML
     protected CustomMenuItem threshMenuItem;
 
-    void updateThreshValue() {
+    @FXML
+    protected Rectangle Rectangle_Resume_Seuil;
+
+    void updateThreshValueInMenu() {
         threshMenuItem.setHideOnClick(false);
         this.threshValueDisplay.setText(String.format("$%.2f", ThreshController.getThresh()));
         this.handleOnMenuRefresh();
@@ -288,7 +284,7 @@ public class ViewHandler {
         }
         if (threshValue != -1) {
             ThreshController.setThresh(threshValue);
-            this.updateThreshValue();
+            this.updateThreshValueInMenu();
         }
     }
 

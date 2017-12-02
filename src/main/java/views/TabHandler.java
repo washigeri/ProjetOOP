@@ -12,6 +12,8 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import models.Category;
@@ -111,12 +113,27 @@ public class TabHandler {
     }
 
     public static void Start() {
-        viewHandler.updateThreshValue();
+        viewHandler.updateThreshValueInMenu();
         LoadSummaryTab();
     }
 
-    private static void LoadSummaryTab() {
+    private static void SetThreshDisplay() {
         viewHandler.Text_Resume_Seuil.setText("$" + String.format("%.2f", ThreshController.getThresh()));
+        Rectangle rectangle = viewHandler.Rectangle_Resume_Seuil;
+        float spending = SpendingController.GetAmountSpentOverTheLastMonth();
+        float thresh = ThreshController.getThresh();
+        float percent = (spending / thresh) * 100f;
+        if (percent >= 75 && percent < 100) {
+            rectangle.fillProperty().setValue(Color.ORANGE);
+        } else if (percent >= 100) {
+            rectangle.fillProperty().setValue(Color.RED);
+        } else {
+            rectangle.fillProperty().setValue(Color.GREEN);
+        }
+    }
+
+    private static void LoadSummaryTab() {
+        TabHandler.SetThreshDisplay();
         viewHandler.Text_Resume_Hebdo.setText("$" + SpendingController.GetAmountSpentOverTheLastWeek());
         viewHandler.Text_Resume_Mensuel.setText("$" + SpendingController.GetAmountSpentOverTheLastMonth());
         viewHandler.Anchor_Resume_LineChart.getChildren().clear();
