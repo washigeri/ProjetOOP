@@ -1,6 +1,7 @@
 package views;
 
 import controllers.SpendingController;
+import controllers.ThreshController;
 import controllers.TransactionController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,6 +51,7 @@ public class TabHandler {
                 break;
         }
     }
+
 
     private static void LoadAddTransactionTab() {
         viewHandler.ChoiceBox_AddTransaction_Categorie.getItems().clear();
@@ -109,12 +111,14 @@ public class TabHandler {
     }
 
     public static void Start() {
+        viewHandler.updateThreshValue();
         LoadSummaryTab();
     }
 
     private static void LoadSummaryTab() {
-        viewHandler.Text_Resume_Hebdo.setText("$ " + SpendingController.GetAmountSpentOverTheLastWeek());
-        viewHandler.Text_Resume_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
+        viewHandler.Text_Resume_Seuil.setText("$" + String.format("%.2f", ThreshController.getThresh()));
+        viewHandler.Text_Resume_Hebdo.setText("$" + SpendingController.GetAmountSpentOverTheLastWeek());
+        viewHandler.Text_Resume_Mensuel.setText("$" + SpendingController.GetAmountSpentOverTheLastMonth());
         viewHandler.Anchor_Resume_LineChart.getChildren().clear();
         LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
         x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());

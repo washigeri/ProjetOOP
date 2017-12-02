@@ -1,6 +1,7 @@
 package views;
 
 import controllers.SpendingController;
+import controllers.ThreshController;
 import controllers.TransactionController;
 import database.DatabaseManager;
 import javafx.application.Platform;
@@ -17,10 +18,7 @@ import models.User;
 
 import java.sql.SQLException;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 public class ViewHandler {
 
@@ -57,14 +55,6 @@ public class ViewHandler {
 
     @FXML
     protected Text Text_Resume_Mensuel;
-
-
-    @FXML
-    protected Text Text_Hebdo_Current;
-
-    @FXML
-    protected Text Text_Hebdo_Past;
-
 
     @FXML
     protected Text Text_Monthly_Current;
@@ -120,6 +110,19 @@ public class ViewHandler {
 
     @FXML
     protected AnchorPane Anchor_Suivi_Category_PieChart;
+
+    @FXML
+    protected Text threshValueDisplay;
+
+    @FXML
+    protected CustomMenuItem threshMenuItem;
+
+    void updateThreshValue() {
+        threshMenuItem.setHideOnClick(false);
+        this.threshValueDisplay.setText(String.format("$%.2f", ThreshController.getThresh()));
+        this.handleOnMenuRefresh();
+    }
+
 
     @FXML
     private void handleAddModifyDateToCompare() {
@@ -259,4 +262,34 @@ public class ViewHandler {
         if (selectedTab != null)
             TabHandler.RefreshTab(selectedTab);
     }
+
+    @FXML
+    private void handleOnThreshSet() {
+        TextInputDialog textInputDialog = new TextInputDialog(String.format("$%.2f", 0f));
+        textInputDialog.setTitle("Définir seuil");
+        textInputDialog.setHeaderText(null);
+        textInputDialog.setContentText("Entrez votre seuil: ");
+        Optional<String> result = textInputDialog.showAndWait();
+        final String[] resA = {""};
+        String res;
+        result.ifPresent(value -> resA[0] = value);
+        float threshValue = -1;
+        if (!Objects.equals(resA[0], "")) {
+            res = resA[0].replace(',', '.');
+            int k = 0;
+            boolean condition = Character.isLetter(res.charAt(k)) || Character.isWhitespace(res.charAt(k));
+            while (condition) {
+                k++;
+                condition = Character.isLetter(res.charAt(k)) || Character.isWhitespace(res.charAt(k));
+            }
+            if (res.charAt(k) == '$')
+                k++;
+            threshValue = Float.parseFloat(res.substring(k));
+        }
+        if (threshValue != -1) {
+            ThreshController.setThresh(threshValue);
+            this.updateThreshValue();
+        }
+    }
+
 }

@@ -7,8 +7,9 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
-      minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0"
-      xmlns="http://javafx.com/javafx/8.0.121" fx:controller="views.ViewHandler">
+      minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.121"
+      fx:controller="views.ViewHandler">
     <children>
         <MenuBar>
             <menus>
@@ -31,9 +32,13 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Seuil">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Définir seuil..."/>
+                        <MenuItem mnemonicParsing="false" onAction="#handleOnThreshSet" text="Définir seuil..."/>
                         <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem disable="true" mnemonicParsing="false"/>
+                        <CustomMenuItem fx:id="threshMenuItem" mnemonicParsing="false" text="Unspecified Action">
+                            <content>
+                                <Text fx:id="threshValueDisplay" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+                            </content>
+                        </CustomMenuItem>
                     </items>
                 </Menu>
             </menus>

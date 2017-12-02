@@ -31,6 +31,21 @@ public class Transaction extends Model {
         this.setCategory(category);
     }
 
+    public static String mapFrequencyToHuman(int frequency) {
+        StringBuilder res = new StringBuilder();
+        int semaines = frequency / 7;
+        int jours = frequency % 7;
+        if (semaines > 0) {
+            res.append(String.format("%d semaine%s", semaines, (semaines > 1) ? "s" : ""));
+        }
+        if (semaines > 0 && jours > 0)
+            res.append(" et ");
+        if (jours > 0) {
+            res.append(String.format("%d jour%s", jours, (jours > 1) ? "s" : ""));
+        }
+
+        return res.toString();
+    }
 
     public User getUser() {
         return user;
@@ -109,22 +124,6 @@ public class Transaction extends Model {
         res.add(getFrequency());
         res.add(getCategory());
         return res;
-    }
-
-    public static String mapFrequencyToHuman(int frequency) {
-        StringBuilder res = new StringBuilder();
-        int semaines = frequency / 7;
-        int jours = frequency % 7;
-        if (semaines > 0) {
-            res.append(String.format("%d semaine%s", semaines, (semaines > 1) ? "s" : ""));
-        }
-        if (semaines > 0 && jours > 0)
-            res.append(" et ");
-        if (jours > 0) {
-            res.append(String.format("%d jour%s", jours, (jours > 1) ? "s" : ""));
-        }
-
-        return res.toString();
     }
 
     @Override

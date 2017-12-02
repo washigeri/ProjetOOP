@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DatabaseManager implements IDatabaseManager {
 
-    static String path = "src/main/resources/";
+    static String path = "../";
     static String fileName = "test.db";
     private static String url = null;
 
