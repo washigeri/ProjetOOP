@@ -3,8 +3,14 @@ package views;
 import controllers.TransactionController;
 import database.DatabaseManager;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import models.Category;
 import models.User;
 
@@ -14,6 +20,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 public class ViewHandler {
@@ -89,8 +96,10 @@ public class ViewHandler {
     protected TextField AddTransactionFieldName;
 
     @FXML
+    protected AnchorPane Anchor_Resume_LineChart;
+    
+    @FXML
     private void handleAddTransactionButtonAction() {
-
         try {
             Category category = (Category) DatabaseManager.getInstance().Select(Category.class
                     , this.ChoiceBox_AddTransaction_Categorie.getSelectionModel().getSelectedItem().getKey());
@@ -118,8 +127,6 @@ public class ViewHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @FXML

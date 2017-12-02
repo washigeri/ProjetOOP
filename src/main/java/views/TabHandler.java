@@ -1,14 +1,17 @@
 package views;
 
 import controllers.Controller;
+import controllers.SpendingController;
 import controllers.TransactionController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 import models.Category;
+import javafx.scene.chart.LineChart;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TabHandler {
@@ -64,9 +67,19 @@ public class TabHandler {
         viewHandler.ChoiceBox_AddTransaction_Repetition.getSelectionModel().selectFirst();
     }
     
+    public static void Start() {
+    	LoadSummaryTab();
+    }
+    
     private static void LoadSummaryTab() {
-    	viewHandler.Text_Resume_Hebdo.setText("" + Controller.GetAmountSpentOverTheLastWeek() + " $");
-    	viewHandler.Text_Resume_Mensuel.setText("" + Controller.GetAmountSpentOverTheLastMonth() + " $");
+    	viewHandler.Text_Resume_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
+    	viewHandler.Text_Resume_Mensuel.setText("$ " + Controller.GetAmountSpentOverTheLastMonth());
+    	viewHandler.Anchor_Resume_LineChart.getChildren().clear();
+    	LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+//    	LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(10, Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+    	x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
+    	x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
+    	viewHandler.Anchor_Resume_LineChart.getChildren().add(x);
     }
 
 }

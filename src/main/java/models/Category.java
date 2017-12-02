@@ -27,4 +27,9 @@ public class Category extends Model {
         res.add(getName());
         return res;
     }
+
+    @Override
+    public String toString() {
+    	return name + " (" + this.getId() + ")";
+    }
 }
