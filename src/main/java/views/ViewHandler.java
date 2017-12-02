@@ -1,4 +1,4 @@
- package views;
+package views;
 
 import controllers.SpendingController;
 import controllers.TransactionController;
@@ -123,32 +123,31 @@ public class ViewHandler {
 
     @FXML
     private void handleAddModifyDateToCompare() {
-    	try {
-	    	int year = ComboBox_Suivi_Compare_Year.getValue();
-	    	int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
-	    	if(year > Calendar.getInstance().get(Calendar.YEAR)  || (year == Calendar.getInstance().get(Calendar.YEAR) && month >= Calendar.getInstance().get(Calendar.MONTH)))
-	    	{
-	    		Button_Suivi_Compare.setDisable(true);
-	    	}
-	    	else {
-	    		Button_Suivi_Compare.setDisable(false);
-	    	}
-    	} catch (NullPointerException e) {
-    		System.out.println(e.getMessage());;
-    	}
+        try {
+            int year = ComboBox_Suivi_Compare_Year.getValue();
+            int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
+            if (year > Calendar.getInstance().get(Calendar.YEAR) || (year == Calendar.getInstance().get(Calendar.YEAR) && month >= Calendar.getInstance().get(Calendar.MONTH))) {
+                Button_Suivi_Compare.setDisable(true);
+            } else {
+                Button_Suivi_Compare.setDisable(false);
+            }
+        } catch (NullPointerException e) {
+            System.out.println(e.getMessage());
+            ;
+        }
     }
 
     @SuppressWarnings("unchecked")
-	@FXML
+    @FXML
     private void handleAddPeriodToCompareToChartSuivi() {
-    	int year = ComboBox_Suivi_Compare_Year.getValue();
-    	int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
-    	XYChart.Series<Number, Number> serieToAdd = SpendingController.GetSeriesOfSpendingsDuringPeriodOfYear(month, Calendar.MONTH, year);
-    	LineChart<Number, Number> lineChart = (LineChart<Number, Number>) Anchor_Suivi_LineChart.getChildren().get(0);
-    	if(lineChart.getData().size() == 2) {
-    		lineChart.getData().remove(1);
-    	}
-    	lineChart.getData().add(serieToAdd);
+        int year = ComboBox_Suivi_Compare_Year.getValue();
+        int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
+        XYChart.Series<Number, Number> serieToAdd = SpendingController.GetSeriesOfSpendingsDuringPeriodOfYear(month, Calendar.MONTH, year);
+        LineChart<Number, Number> lineChart = (LineChart<Number, Number>) Anchor_Suivi_LineChart.getChildren().get(0);
+        if (lineChart.getData().size() == 2) {
+            lineChart.getData().remove(1);
+        }
+        lineChart.getData().add(serieToAdd);
     }
 
     @FXML
@@ -179,7 +178,6 @@ public class ViewHandler {
                         Date.from(Instant.from(
                                 endDate.atStartOfDay(ZoneId.systemDefault())
                         )));
-                System.out.println("ok");
             } else {
                 TransactionController.CreateNewTransaction(amount, category, frequency, description,
                         new User(1, "test_user", "pwd"), Date.from(

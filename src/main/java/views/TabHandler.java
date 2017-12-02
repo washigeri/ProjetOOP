@@ -1,24 +1,24 @@
- package views;
+package views;
 
- import controllers.SpendingController;
- import controllers.TransactionController;
- import javafx.collections.FXCollections;
- import javafx.collections.ObservableList;
- import javafx.geometry.Side;
- import javafx.scene.Node;
- import javafx.scene.chart.LineChart;
- import javafx.scene.chart.PieChart;
- import javafx.scene.control.*;
- import javafx.scene.layout.HBox;
- import javafx.scene.layout.VBox;
- import javafx.scene.text.Text;
- import javafx.scene.text.TextAlignment;
- import models.Category;
- import models.Spending;
- import models.Transaction;
+import controllers.SpendingController;
+import controllers.TransactionController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Side;
+import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import models.Category;
+import models.Spending;
+import models.Transaction;
 
- import java.time.ZoneId;
- import java.util.*;
+import java.time.ZoneId;
+import java.util.*;
 
 public class TabHandler {
 
@@ -73,9 +73,12 @@ public class TabHandler {
         listView.getItems().clear();
         for (Transaction transaction :
                 transactions) {
-            Text text = new Text(transaction.toString());
+            Text text = new Text(transaction.toString2());
             Button button = new Button("Supprimer");
-            button.setOnAction(event -> TransactionController.DeleteTransaction(transaction.getId()));
+            button.setOnAction(event -> {
+                TransactionController.DeleteTransaction(transaction.getId());
+                RefreshTab(viewHandler.tabPane.getSelectionModel().getSelectedItem());
+            });
             HBox hBox = new HBox();
             hBox.getChildren().addAll(text, button);
             listView.getItems().add(hBox);
@@ -97,57 +100,56 @@ public class TabHandler {
     }
 
     private static void LoadSuiviTab() {
-    	//viewHandler.Text_Suivi_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
-    	viewHandler.Text_Suivi_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
-    	viewHandler.Anchor_Suivi_LineChart.getChildren().clear();
-    	LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
-    	x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
-    	x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
-    	viewHandler.Anchor_Suivi_LineChart.getChildren().add(x);
-    	List<Integer> yearsFrom1970 = new ArrayList<Integer>();
-    	for(int i=Calendar.getInstance().get(Calendar.YEAR); i > 1969; i--) {
-    		yearsFrom1970.add(i);
-    	}
-    	List<IntStringPair> months = new ArrayList<IntStringPair>();
-    	months.add(new IntStringPair(0, "Janvier"));
-    	months.add(new IntStringPair(1, "Février"));
-    	months.add(new IntStringPair(2, "Mars"));
-    	months.add(new IntStringPair(3, "Avril"));
-    	months.add(new IntStringPair(4, "Mai"));
-    	months.add(new IntStringPair(5, "Juin"));
-    	months.add(new IntStringPair(6, "Juillet"));
-    	months.add(new IntStringPair(7, "Août"));
-    	months.add(new IntStringPair(8, "Septembre"));
-    	months.add(new IntStringPair(9, "Octobre"));
-    	months.add(new IntStringPair(10, "Novembre"));
-    	months.add(new IntStringPair(11, "Décembre"));
-    	viewHandler.ComboBox_Suivi_Compare_Year.getItems().clear();
-    	viewHandler.ComboBox_Suivi_Compare_Year.getItems().addAll(yearsFrom1970);
-    	viewHandler.ComboBox_Suivi_Compare_Month.getItems().clear();
-    	viewHandler.ComboBox_Suivi_Compare_Month.getItems().addAll(months);
-    	int previousMonth;
-    	int previousMonthsYear;
-    	Calendar today = Calendar.getInstance();
-    	if(today.get(Calendar.MONTH) == 0) {
-    		previousMonthsYear = today.get(Calendar.YEAR) - 1;
-    		previousMonth = 11;
-    	}
-    	else {
-    		previousMonthsYear = today.get(Calendar.YEAR);
-    		previousMonth = today.get(Calendar.MONTH) - 1;
-    	}
-    	viewHandler.ComboBox_Suivi_Compare_Year.getSelectionModel().select(today.get(Calendar.YEAR) - previousMonthsYear);
-    	viewHandler.ComboBox_Suivi_Compare_Month.getSelectionModel().select(previousMonth);
-    	PieChart pieChart = new PieChart();
-    	HashMap<Integer, Float> spendingsByCategory = SpendingController.GetSpendingsByCategoryDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
-    	ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
-    	for(Map.Entry<Integer, Float> entry : spendingsByCategory.entrySet()) {
-    		data.add(new PieChart.Data(entry.getKey().toString(), entry.getValue()));
-    	}
-    	pieChart.setData(data);
-    	pieChart.setLegendSide(Side.LEFT);
-    	viewHandler.Anchor_Suivi_Category_PieChart.getChildren().clear();
-    	viewHandler.Anchor_Suivi_Category_PieChart.getChildren().add(pieChart);
+        //viewHandler.Text_Suivi_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
+        viewHandler.Text_Suivi_Mensuel.setText("$ " + SpendingController.GetAmountSpentOverTheLastMonth());
+        viewHandler.Anchor_Suivi_LineChart.getChildren().clear();
+        LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+        x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
+        x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
+        viewHandler.Anchor_Suivi_LineChart.getChildren().add(x);
+        List<Integer> yearsFrom1970 = new ArrayList<Integer>();
+        for (int i = Calendar.getInstance().get(Calendar.YEAR); i > 1969; i--) {
+            yearsFrom1970.add(i);
+        }
+        List<IntStringPair> months = new ArrayList<IntStringPair>();
+        months.add(new IntStringPair(0, "Janvier"));
+        months.add(new IntStringPair(1, "Février"));
+        months.add(new IntStringPair(2, "Mars"));
+        months.add(new IntStringPair(3, "Avril"));
+        months.add(new IntStringPair(4, "Mai"));
+        months.add(new IntStringPair(5, "Juin"));
+        months.add(new IntStringPair(6, "Juillet"));
+        months.add(new IntStringPair(7, "Août"));
+        months.add(new IntStringPair(8, "Septembre"));
+        months.add(new IntStringPair(9, "Octobre"));
+        months.add(new IntStringPair(10, "Novembre"));
+        months.add(new IntStringPair(11, "Décembre"));
+        viewHandler.ComboBox_Suivi_Compare_Year.getItems().clear();
+        viewHandler.ComboBox_Suivi_Compare_Year.getItems().addAll(yearsFrom1970);
+        viewHandler.ComboBox_Suivi_Compare_Month.getItems().clear();
+        viewHandler.ComboBox_Suivi_Compare_Month.getItems().addAll(months);
+        int previousMonth;
+        int previousMonthsYear;
+        Calendar today = Calendar.getInstance();
+        if (today.get(Calendar.MONTH) == 0) {
+            previousMonthsYear = today.get(Calendar.YEAR) - 1;
+            previousMonth = 11;
+        } else {
+            previousMonthsYear = today.get(Calendar.YEAR);
+            previousMonth = today.get(Calendar.MONTH) - 1;
+        }
+        viewHandler.ComboBox_Suivi_Compare_Year.getSelectionModel().select(today.get(Calendar.YEAR) - previousMonthsYear);
+        viewHandler.ComboBox_Suivi_Compare_Month.getSelectionModel().select(previousMonth);
+        PieChart pieChart = new PieChart();
+        HashMap<Integer, Float> spendingsByCategory = SpendingController.GetSpendingsByCategoryDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+        ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+        for (Map.Entry<Integer, Float> entry : spendingsByCategory.entrySet()) {
+            data.add(new PieChart.Data(entry.getKey().toString(), entry.getValue()));
+        }
+        pieChart.setData(data);
+        pieChart.setLegendSide(Side.LEFT);
+        viewHandler.Anchor_Suivi_Category_PieChart.getChildren().clear();
+        viewHandler.Anchor_Suivi_Category_PieChart.getChildren().add(pieChart);
     }
 
     private static void LoadHistoryTab() {

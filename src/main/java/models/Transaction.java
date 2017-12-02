@@ -1,9 +1,12 @@
 package models;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Transaction extends Model {
     private User user;
@@ -108,10 +111,61 @@ public class Transaction extends Model {
         return res;
     }
 
+    public static String mapFrequencyToHuman(int frequency) {
+        StringBuilder res = new StringBuilder();
+        int semaines = frequency / 7;
+        int jours = frequency % 7;
+        if (semaines > 0) {
+            res.append(String.format("%d semaine%s", semaines, (semaines > 1) ? "s" : ""));
+        }
+        if (semaines > 0 && jours > 0)
+            res.append(" et ");
+        if (jours > 0) {
+            res.append(String.format("%d jour%s", jours, (jours > 1) ? "s" : ""));
+        }
+
+        return res.toString();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Transaction créée le ").append(new SimpleDateFormat("dd/MM/YYYY").format(creationDate)).append(" du ").append(new SimpleDateFormat("dd/MM/YYYY").format(startDate)).append(" au ").append(new SimpleDateFormat("dd/MM/YYYY").format(endDate)).append(" pour un montant de ").append(amount).append(".");
+        sb.append("Transaction créée le ").append(new SimpleDateFormat("dd/MM/YYYY")
+                .format(creationDate)).append(" du ")
+                .append(new SimpleDateFormat("dd/MM/YYYY")
+                        .format(startDate))
+                .append(" au ")
+                .append(new SimpleDateFormat("dd/MM/YYYY")
+                        .format(endDate)).append(" pour un montant de ")
+                .append(amount).append(".");
+        return sb.toString();
+    }
+
+    public String toString2() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Créée le : ")
+                .append(new SimpleDateFormat("dd/MM/YY").format(creationDate))
+                .append(" à ")
+                .append(new SimpleDateFormat("hh:mm").format(creationDate))
+                .append(" ");
+        if (this.getDescription() != null && !Objects.equals(this.getDescription(), "")) {
+            sb.append("-- ")
+                    .append(StringUtils.abbreviate(this.getDescription(), 15))
+                    .append(" -- ");
+        }
+        sb.append("D: ")
+                .append(new SimpleDateFormat("dd/MM/yy").format(startDate))
+                .append(" F: ")
+                .append(new SimpleDateFormat("dd/MM/yy").format(endDate))
+                .append(" Catégorie: ")
+                .append(this.getCategory().getName());
+        if (this.getFrequency() != 0) {
+            sb.append(" Fréquence: ")
+                    .append(Transaction.mapFrequencyToHuman(this.getFrequency()));
+        }
+        sb.append(" Montant: ")
+                .append(String.format("%.2f", this.getAmount()))
+        ;
         return sb.toString();
     }
 
