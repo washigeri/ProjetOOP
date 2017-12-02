@@ -6,14 +6,14 @@ import controllers.TransactionController;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import models.Category;
 import models.Spending;
+import models.Transaction;
 
 import java.time.ZoneId;
 import java.util.*;
@@ -22,36 +22,36 @@ public class TabHandler {
 
     public static ViewHandler viewHandler;
 
+    public static void RefreshTab(Tab selectedTab) {
+        TabHandler.ExecuteCorrespondingTabLoad(selectedTab);
+    }
+
     public static void TabChangeHandler() {
         viewHandler.tabPane.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    switch (newValue.getId()) {
-                        case "Tab_Resume":
-                            System.out.println("Resume");
-                            TabHandler.LoadSummaryTab();
-                            break;
-                        case "Tab_AddTransaction":
-                            System.out.println("Transaction");
-                            TabHandler.LoadAddTransactionTab();
-                            break;
-                        case "Tab_Hebdo":
-                            System.out.println("Hebo");
-
-                            break;
-                        case "Tab_Mensuel":
-                            System.out.println("Mensuel");
-
-                            break;
-                        case "Tab_Historique":
-                            System.out.println("Historique");
-                            TabHandler.LoadHistoryTab();
-                            break;
-                    }
+                    TabHandler.ExecuteCorrespondingTabLoad(newValue);
                 }
         );
     }
 
-    //TODO: Arranger le tab du formulaire
+    private static void ExecuteCorrespondingTabLoad(Tab selectedTab) {
+        switch (selectedTab.getId()) {
+            case "Tab_Resume":
+                TabHandler.LoadSummaryTab();
+                break;
+            case "Tab_AddTransaction":
+                TabHandler.LoadAddTransactionTab();
+                break;
+            case "Tab_Hebdo":
+                break;
+            case "Tab_Mensuel":
+                break;
+            case "Tab_Historique":
+                TabHandler.LoadHistoryTab();
+                break;
+        }
+    }
+
     private static void LoadAddTransactionTab() {
         viewHandler.ChoiceBox_AddTransaction_Categorie.getItems().clear();
         ArrayList<Category> categories = (ArrayList<Category>) TransactionController.GetAllCategories();
@@ -67,6 +67,18 @@ public class TabHandler {
         viewHandler.ChoiceBox_AddTransaction_Repetition.getItems().clear();
         viewHandler.ChoiceBox_AddTransaction_Repetition.getItems().addAll("Jours", "Semaines");
         viewHandler.ChoiceBox_AddTransaction_Repetition.getSelectionModel().selectFirst();
+        ArrayList<Transaction> transactions = (ArrayList<Transaction>) TransactionController.GetAllActiveTransactions();
+        ListView<HBox> listView = viewHandler.TransactionList;
+        listView.getItems().clear();
+        for (Transaction transaction :
+                transactions) {
+            Text text = new Text(transaction.toString());
+            Button button = new Button("Supprimer");
+            button.setOnAction(event -> TransactionController.DeleteTransaction(transaction.getId()));
+            HBox hBox = new HBox();
+            hBox.getChildren().addAll(text, button);
+            listView.getItems().add(hBox);
+        }
     }
 
     public static void Start() {
@@ -96,7 +108,8 @@ public class TabHandler {
                         String.format("%.2f", entry.getValue())));
                 titledPanes.add(titledPane);
             }
-            
+            for (int i = 0; i < 5 - values.size(); i++)
+                titledPanes.add(new TitledPane());
         }
         ListView<Text> listView = viewHandler.ListView_Transactions;
         ArrayList<Spending> spendings = (ArrayList<Spending>) TransactionController.GetPreviousSpendings();

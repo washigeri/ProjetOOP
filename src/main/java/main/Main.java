@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import views.TabHandler;
-import views.ViewHandler;
 
 public class Main extends Application {
 
@@ -20,10 +19,9 @@ public class Main extends Application {
         DatabaseManager.getInstance();
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("../sample.fxml").openStream());
-        ViewHandler viewHandler = fxmlLoader.getController();
-        TabHandler.viewHandler = viewHandler;
+        TabHandler.viewHandler = fxmlLoader.getController();
         TabHandler.TabChangeHandler();
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Projet OOP");
         primaryStage.setScene(new Scene(root, 1280, 720));
         primaryStage.show();
         TabHandler.Start();

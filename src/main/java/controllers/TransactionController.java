@@ -57,13 +57,13 @@ public class TransactionController {
     @SuppressWarnings("unchecked")
     public static boolean DeleteTransaction(int id) {
         try {
-            databaseManager.Delete(Transaction.class, id);
             ArrayList<Spending> spendings = (ArrayList<Spending>) databaseManager.SelectAll(Spending.class,
                     String.format("operation_id = %d", id));
             for (Spending spending :
                     spendings) {
                 databaseManager.Delete(Spending.class, spending.getId());
             }
+            databaseManager.Delete(Transaction.class, id);
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,10 +142,24 @@ public class TransactionController {
     public static List<Spending> GetPreviousSpendings() {
         try {
             ArrayList<Spending> spendings = (ArrayList<Spending>)
-                    DatabaseManager.getInstance().SelectAll(Spending.class);
+                    databaseManager.SelectAll(Spending.class);
             return spendings.stream()
                     .filter(p -> p.getDate().before(new Date()))
                     .sorted(Comparator.comparing(Spending::getDate).reversed())
+                    .collect(Collectors.toList());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Transaction> GetAllActiveTransactions() {
+        try {
+            ArrayList<Transaction> transactions = (ArrayList<Transaction>) databaseManager.SelectAll(Transaction.class);
+            return transactions.stream()
+                    .filter(p -> p.getEndDate().after(new Date()))
+                    .sorted(Comparator.comparing(Transaction::getEndDate).reversed())
                     .collect(Collectors.toList());
         } catch (SQLException e) {
             e.printStackTrace();

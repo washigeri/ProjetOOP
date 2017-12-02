@@ -2,9 +2,11 @@ package views;
 
 import controllers.TransactionController;
 import database.DatabaseManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import models.Category;
@@ -92,6 +94,12 @@ public class ViewHandler {
     protected AnchorPane Anchor_Resume_LineChart;
 
     @FXML
+    protected Label Label_Repetition;
+
+    @FXML
+    protected ListView<HBox> TransactionList;
+
+    @FXML
     private void handleAddTransactionButtonAction() {
         try {
             Category category = (Category) DatabaseManager.getInstance().Select(Category.class
@@ -130,6 +138,7 @@ public class ViewHandler {
                                 endDate.atStartOfDay(ZoneId.systemDefault())
                         )));
             }
+            handleOnMenuRefresh();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -166,10 +175,24 @@ public class ViewHandler {
         if (date.isAfter(this.DatePicker_AddTransaction_Start.getValue())) {
             this.TextField_AddTransaction_Repetition.disableProperty().setValue(false);
             this.ChoiceBox_AddTransaction_Repetition.disableProperty().setValue(false);
+            this.Label_Repetition.disableProperty().setValue(false);
         } else {
             this.TextField_AddTransaction_Repetition.disableProperty().setValue(true);
             this.ChoiceBox_AddTransaction_Repetition.disableProperty().setValue(true);
+            this.Label_Repetition.disableProperty().setValue(true);
 
         }
+    }
+
+    @FXML
+    private void handleOnMenuExit() {
+        Platform.exit();
+    }
+
+    @FXML
+    private void handleOnMenuRefresh() {
+        Tab selectedTab = this.tabPane.getSelectionModel().getSelectedItem();
+        if (selectedTab != null)
+            TabHandler.RefreshTab(selectedTab);
     }
 }
