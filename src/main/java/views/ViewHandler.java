@@ -8,13 +8,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Side;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -221,11 +215,13 @@ public class ViewHandler {
     private void handleAddModifyDateToCompare() {
         try {
             int year = ComboBox_Suivi_Compare_Year.getValue();
-            int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
-            if (year > Calendar.getInstance().get(Calendar.YEAR) || (year == Calendar.getInstance().get(Calendar.YEAR) && month >= Calendar.getInstance().get(Calendar.MONTH))) {
-                Button_Suivi_Compare.setDisable(true);
-            } else {
-                Button_Suivi_Compare.setDisable(false);
+            if (ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem() != null) {
+                int month = ComboBox_Suivi_Compare_Month.getSelectionModel().getSelectedItem().getKey();
+                if (year > Calendar.getInstance().get(Calendar.YEAR) || (year == Calendar.getInstance().get(Calendar.YEAR) && month >= Calendar.getInstance().get(Calendar.MONTH))) {
+                    Button_Suivi_Compare.setDisable(true);
+                } else {
+                    Button_Suivi_Compare.setDisable(false);
+                }
             }
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
