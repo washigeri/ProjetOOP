@@ -3,25 +3,17 @@ package views;
 import controllers.TransactionController;
 import database.DatabaseManager;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Popup;
 import models.Category;
 import models.User;
 
-import java.sql.Date;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.Objects;
 
 public class ViewHandler {
@@ -40,7 +32,7 @@ public class ViewHandler {
     public Button Button_AddTransaction_AddCategorie;
 
     @FXML
-    public ChoiceBox<IntStringPair> ChoiceBox_AddTransaction_Categorie;
+    public ComboBox<IntStringPair> ChoiceBox_AddTransaction_Categorie;
 
     @FXML
     public DatePicker DatePicker_AddTransaction_Start;
@@ -118,13 +110,26 @@ public class ViewHandler {
                 int multiplier = (daysOrWeeks.equals("Jours")) ? 1 : 7;
                 frequency *= multiplier;
             }
-            TransactionController.CreateNewTransaction(amount, category, frequency, description,
-                    new User(1, "test_user", "pwd"), Date.from(
-                            Instant.from(stardDate.atStartOfDay(ZoneId.systemDefault()))
-                    ), Date.from(Instant.from(
-                            endDate.atStartOfDay(ZoneId.systemDefault())
-                    )));
-            System.out.println("");
+            LocalDate today = LocalDate.now(ZoneId.systemDefault());
+            if (stardDate.isEqual(today)) {
+                LocalDateTime now = stardDate.atTime(LocalTime.now());
+                TransactionController.CreateNewTransaction(amount, category, frequency, description,
+                        new User(1, "test_user", "pwd"), Date.from(
+                                now.atZone(ZoneId.systemDefault()).toInstant()),
+                        Date.from(Instant.from(
+                                endDate.atStartOfDay(ZoneId.systemDefault())
+                        )));
+                System.out.println("ok");
+            } else {
+                TransactionController.CreateNewTransaction(amount, category, frequency, description,
+                        new User(1, "test_user", "pwd"), Date.from(
+                                Instant.from(
+                                        stardDate.atStartOfDay(ZoneId.systemDefault())
+                                ))
+                        , Date.from(Instant.from(
+                                endDate.atStartOfDay(ZoneId.systemDefault())
+                        )));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

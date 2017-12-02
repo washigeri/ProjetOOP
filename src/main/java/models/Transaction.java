@@ -1,6 +1,5 @@
 package models;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -111,9 +110,9 @@ public class Transaction extends Model {
 
     @Override
     public String toString() {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("Transaction cr�e le ").append(new SimpleDateFormat("dd/MM/YYYY").format(creationDate)).append(" du ").append(new SimpleDateFormat("dd/MM/YYYY").format(startDate)).append(" au ").append(new SimpleDateFormat("dd/MM/YYYY").format(endDate)).append(" pour un montant de ").append(amount).append(".");
-    	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Transaction créée le ").append(new SimpleDateFormat("dd/MM/YYYY").format(creationDate)).append(" du ").append(new SimpleDateFormat("dd/MM/YYYY").format(startDate)).append(" au ").append(new SimpleDateFormat("dd/MM/YYYY").format(endDate)).append(" pour un montant de ").append(amount).append(".");
+        return sb.toString();
     }
 
 }

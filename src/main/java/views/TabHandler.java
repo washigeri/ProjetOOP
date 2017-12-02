@@ -5,6 +5,7 @@ import controllers.SpendingController;
 import controllers.TransactionController;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
@@ -12,15 +13,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import models.Category;
-import javafx.scene.chart.LineChart;
 import models.Spending;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TabHandler {
 
@@ -55,7 +51,7 @@ public class TabHandler {
         );
     }
 
-
+    //TODO: Arranger le tab du formulaire
     private static void LoadAddTransactionTab() {
         viewHandler.ChoiceBox_AddTransaction_Categorie.getItems().clear();
         ArrayList<Category> categories = (ArrayList<Category>) TransactionController.GetAllCategories();
@@ -74,18 +70,18 @@ public class TabHandler {
     }
 
     public static void Start() {
-    	LoadSummaryTab();
+        LoadSummaryTab();
     }
 
     private static void LoadSummaryTab() {
-    	viewHandler.Text_Resume_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
-    	viewHandler.Text_Resume_Mensuel.setText("$ " + Controller.GetAmountSpentOverTheLastMonth());
-    	viewHandler.Anchor_Resume_LineChart.getChildren().clear();
-    	LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
+        viewHandler.Text_Resume_Hebdo.setText("$ " + Controller.GetAmountSpentOverTheLastWeek());
+        viewHandler.Text_Resume_Mensuel.setText("$ " + Controller.GetAmountSpentOverTheLastMonth());
+        viewHandler.Anchor_Resume_LineChart.getChildren().clear();
+        LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(Calendar.getInstance().get(Calendar.MONTH), Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
 //    	LineChart<Number, Number> x = SpendingController.GetChartOfSpendingsDuringPeriodOfYear(10, Calendar.MONTH, Calendar.getInstance().get(Calendar.YEAR));
-    	x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
-    	x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
-    	viewHandler.Anchor_Resume_LineChart.getChildren().add(x);
+        x.setPrefWidth(viewHandler.Anchor_Resume_LineChart.getWidth());
+        x.setPrefHeight(viewHandler.Anchor_Resume_LineChart.getHeight());
+        viewHandler.Anchor_Resume_LineChart.getChildren().add(x);
     }
 
     private static void LoadHistoryTab() {
@@ -93,13 +89,14 @@ public class TabHandler {
         VBox vBox = viewHandler.VBox_Top5;
         ObservableList<Node> titledPanes = vBox.getChildren();
         titledPanes.clear();
-        if (values.size() == 5) {
+        if (values.size() <= 5) {
             for (Map.Entry<String, Float> entry :
                     values.entrySet()) {
                 TitledPane titledPane = new TitledPane(entry.getKey(), new Label("$" +
                         String.format("%.2f", entry.getValue())));
                 titledPanes.add(titledPane);
             }
+            
         }
         ListView<Text> listView = viewHandler.ListView_Transactions;
         ArrayList<Spending> spendings = (ArrayList<Spending>) TransactionController.GetPreviousSpendings();

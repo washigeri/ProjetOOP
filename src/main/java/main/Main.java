@@ -20,7 +20,7 @@ public class Main extends Application {
         DatabaseManager.getInstance();
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("../sample.fxml").openStream());
-        ViewHandler viewHandler = (ViewHandler) fxmlLoader.getController();
+        ViewHandler viewHandler = fxmlLoader.getController();
         TabHandler.viewHandler = viewHandler;
         TabHandler.TabChangeHandler();
         primaryStage.setTitle("Hello World");

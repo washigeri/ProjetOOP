@@ -16,7 +16,7 @@ public class DatabaseManager implements IDatabaseManager {
     static String fileName = "test.db";
     private static String url = null;
 
-    private static DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    private static DateFormat df = new SimpleDateFormat("hh:mm:ss-dd/MM/yyyy");
 
     private static DatabaseManager instance = null;
 
